@@ -1,0 +1,685 @@
+package com.mentalhealthapi.dto;
+
+import java.time.LocalDate;
+
+public class GrantRequestDTO {
+	private Integer id;
+	private String location1;
+	private String prefectures1;
+	private String municipality1;
+	private String address1;
+	private String building1;
+	private String institution;
+	private String dept;
+	private String fullname;
+	private String furigana;
+	private String dob;
+	private String age;
+	private String home;
+	private String prefectures2;
+	private String municipality2;
+	private String address2;
+	private String building2;
+	private String phone;
+	private String email2;
+	private String representative;
+	private String repLocation;
+	private String repPrefectures;
+	private String repMunicipality;
+	private String repAddress;
+	private String repBuilding;
+	private String repPhone;
+	private String repEmail;
+	private String inCharge;
+	private String recomdPernInst;
+	private String recomdPernJob;
+	private String recomdPernFullname;
+	private String recomdPernLocation;
+	private String recomdPernPrefectures4;
+	private String recomdPernMunicipality;
+	private String recomdPernAddress;
+	private String recomdPernBuilding;
+	private String recomdPernPhone;
+	private String file1;
+	private String biography;
+	private String application;
+	private String classification;
+	private String newCont;	
+	private String researchName;
+	private String expEquipmentCosts;
+	private String expConsumablesCosts;
+	private String expTravelExpenses;
+	private String expRewardMoney;
+	private String expOther;
+	private String expTotal;
+	private String subEquipmentCosts;
+	private String subConsumablesCosts;
+	private String subTravelExpenses;
+	private String subRewardMoney; 
+	private String subOther;
+	private String subTotal; 
+	private String details; 
+	private String purpose;
+	private String target;
+	private String contents;
+	private String expectedResults;
+	private String approval; 
+	private String researchSubjects;
+	private String keywords; 
+	private String originality;
+	private String achievements;
+	private String orgPrincipal;
+	private String affiliation; 
+	private String age0;
+	private String role0; 
+	private String coordinator1;
+	private String affiliation1;
+	private String age1;
+	private String role1;
+	private String coordinator2; 
+	private String affiliation2;
+	private String age2;
+	private String role2;
+	private String coordinator3;
+	private String affiliation3;
+	private String age3; 
+	private String role3; 
+	private String coordinator4;
+	private String affiliation4;
+	private String age4; 
+	private String role4; 	
+	private String coordinator5;
+	private String affiliation5;
+	private String age5;
+	private String role5;
+	private String researchContents;
+	private String file2;
+	private LocalDate dateCreated;
+	private String country1;
+	private String country2;
+	private String country3; 
+	private String country4; 
+	private String remark;
+	public String getLocation1() {
+		return location1;
+	}
+	public void setLocation1(String location1) {
+		this.location1 = location1;
+	}
+	public String getPrefectures1() {
+		return prefectures1;
+	}
+	public void setPrefectures1(String prefectures1) {
+		this.prefectures1 = prefectures1;
+	}
+	public String getMunicipality1() {
+		return municipality1;
+	}
+	public void setMunicipality1(String municipality1) {
+		this.municipality1 = municipality1;
+	}
+	public String getAddress1() {
+		return address1;
+	}
+	public void setAddress1(String address1) {
+		this.address1 = address1;
+	}
+	public String getBuilding1() {
+		return building1;
+	}
+	public void setBuilding1(String building1) {
+		this.building1 = building1;
+	}
+	public String getInstitution() {
+		return institution;
+	}
+	public void setInstitution(String institution) {
+		this.institution = institution;
+	}
+	public String getDept() {
+		return dept;
+	}
+	public void setDept(String dept) {
+		this.dept = dept;
+	}
+	public String getFullname() {
+		return fullname;
+	}
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
+	}
+	public String getFurigana() {
+		return furigana;
+	}
+	public void setFurigana(String furigana) {
+		this.furigana = furigana;
+	}
+	public String getDob() {
+		return dob;
+	}
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
+	public String getAge() {
+		return age;
+	}
+	public void setAge(String age) {
+		this.age = age;
+	}
+	public String getHome() {
+		return home;
+	}
+	public void setHome(String home) {
+		this.home = home;
+	}
+	public String getPrefectures2() {
+		return prefectures2;
+	}
+	public void setPrefectures2(String prefectures2) {
+		this.prefectures2 = prefectures2;
+	}
+	public String getMunicipality2() {
+		return municipality2;
+	}
+	public void setMunicipality2(String municipality2) {
+		this.municipality2 = municipality2;
+	}
+	public String getAddress2() {
+		return address2;
+	}
+	public void setAddress2(String address2) {
+		this.address2 = address2;
+	}
+	public String getBuilding2() {
+		return building2;
+	}
+	public void setBuilding2(String building2) {
+		this.building2 = building2;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public String getEmail2() {
+		return email2;
+	}
+	public void setEmail2(String email2) {
+		this.email2 = email2;
+	}
+	public String getRepresentative() {
+		return representative;
+	}
+	public void setRepresentative(String representative) {
+		this.representative = representative;
+	}
+	public String getRepLocation() {
+		return repLocation;
+	}
+	public void setRepLocation(String repLocation) {
+		this.repLocation = repLocation;
+	}
+	public String getRepPrefectures() {
+		return repPrefectures;
+	}
+	public void setRepPrefectures(String repPrefectures) {
+		this.repPrefectures = repPrefectures;
+	}
+	public String getRepMunicipality() {
+		return repMunicipality;
+	}
+	public void setRepMunicipality(String repMunicipality) {
+		this.repMunicipality = repMunicipality;
+	}
+	public String getRepAddress() {
+		return repAddress;
+	}
+	public void setRepAddress(String repAddress) {
+		this.repAddress = repAddress;
+	}
+	public String getRepBuilding() {
+		return repBuilding;
+	}
+	public void setRepBuilding(String repBuilding) {
+		this.repBuilding = repBuilding;
+	}
+	public String getRepPhone() {
+		return repPhone;
+	}
+	public void setRepPhone(String repPhone) {
+		this.repPhone = repPhone;
+	}
+	public String getRepEmail() {
+		return repEmail;
+	}
+	public void setRepEmail(String repEmail) {
+		this.repEmail = repEmail;
+	}
+	public String getInCharge() {
+		return inCharge;
+	}
+	public void setInCharge(String inCharge) {
+		this.inCharge = inCharge;
+	}
+	public String getRecomdPernInst() {
+		return recomdPernInst;
+	}
+	public void setRecomdPernInst(String recomdPernInst) {
+		this.recomdPernInst = recomdPernInst;
+	}
+	public String getRecomdPernJob() {
+		return recomdPernJob;
+	}
+	public void setRecomdPernJob(String recomdPernJob) {
+		this.recomdPernJob = recomdPernJob;
+	}
+	public String getRecomdPernFullname() {
+		return recomdPernFullname;
+	}
+	public void setRecomdPernFullname(String recomdPernFullname) {
+		this.recomdPernFullname = recomdPernFullname;
+	}
+	public String getRecomdPernLocation() {
+		return recomdPernLocation;
+	}
+	public void setRecomdPernLocation(String recomdPernLocation) {
+		this.recomdPernLocation = recomdPernLocation;
+	}
+	public String getRecomdPernPrefectures4() {
+		return recomdPernPrefectures4;
+	}
+	public void setRecomdPernPrefectures4(String recomdPernPrefectures4) {
+		this.recomdPernPrefectures4 = recomdPernPrefectures4;
+	}
+	public String getRecomdPernMunicipality() {
+		return recomdPernMunicipality;
+	}
+	public void setRecomdPernMunicipality(String recomdPernMunicipality) {
+		this.recomdPernMunicipality = recomdPernMunicipality;
+	}
+	public String getRecomdPernAddress() {
+		return recomdPernAddress;
+	}
+	public void setRecomdPernAddress(String recomdPernAddress) {
+		this.recomdPernAddress = recomdPernAddress;
+	}
+	public String getRecomdPernBuilding() {
+		return recomdPernBuilding;
+	}
+	public void setRecomdPernBuilding(String recomdPernBuilding) {
+		this.recomdPernBuilding = recomdPernBuilding;
+	}
+	public String getRecomdPernPhone() {
+		return recomdPernPhone;
+	}
+	public void setRecomdPernPhone(String recomdPernPhone) {
+		this.recomdPernPhone = recomdPernPhone;
+	}
+	public String getFile1() {
+		return file1;
+	}
+	public void setFile1(String file1) {
+		this.file1 = file1;
+	}
+	public String getBiography() {
+		return biography;
+	}
+	public void setBiography(String biography) {
+		this.biography = biography;
+	}
+	public String getApplication() {
+		return application;
+	}
+	public void setApplication(String application) {
+		this.application = application;
+	}
+	public String getClassification() {
+		return classification;
+	}
+	public void setClassification(String classification) {
+		this.classification = classification;
+	}
+	public String getNewCont() {
+		return newCont;
+	}
+	public void setNewCont(String newCont) {
+		this.newCont = newCont;
+	}
+	public String getResearchName() {
+		return researchName;
+	}
+	public void setResearchName(String researchName) {
+		this.researchName = researchName;
+	}
+	public String getExpEquipmentCosts() {
+		return expEquipmentCosts;
+	}
+	public void setExpEquipmentCosts(String data) {
+		this.expEquipmentCosts = data;
+	}
+	public String getExpConsumablesCosts() {
+		return expConsumablesCosts;
+	}
+	public void setExpConsumablesCosts(String expConsumablesCosts) {
+		this.expConsumablesCosts = expConsumablesCosts;
+	}
+	public String getExpTravelExpenses() {
+		return expTravelExpenses;
+	}
+	public void setExpTravelExpenses(String expTravelExpenses) {
+		this.expTravelExpenses = expTravelExpenses;
+	}
+	public String getExpRewardMoney() {
+		return expRewardMoney;
+	}
+	public void setExpRewardMoney(String expRewardMoney) {
+		this.expRewardMoney = expRewardMoney;
+	}
+	public String getExpOther() {
+		return expOther;
+	}
+	public void setExpOther(String expOther) {
+		this.expOther = expOther;
+	}
+	public String getExpTotal() {
+		return expTotal;
+	}
+	public void setExpTotal(String expTotal) {
+		this.expTotal = expTotal;
+	}
+	public String getSubEquipmentCosts() {
+		return subEquipmentCosts;
+	}
+	public void setSubEquipmentCosts(String subEquipmentCosts) {
+		this.subEquipmentCosts = subEquipmentCosts;
+	}
+	public String getSubConsumablesCosts() {
+		return subConsumablesCosts;
+	}
+	public void setSubConsumablesCosts(String subConsumablesCosts) {
+		this.subConsumablesCosts = subConsumablesCosts;
+	}
+	public String getSubTravelExpenses() {
+		return subTravelExpenses;
+	}
+	public void setSubTravelExpenses(String subTravelExpenses) {
+		this.subTravelExpenses = subTravelExpenses;
+	}
+	public String getSubRewardMoney() {
+		return subRewardMoney;
+	}
+	public void setSubRewardMoney(String subRewardMoney) {
+		this.subRewardMoney = subRewardMoney;
+	}
+	public String getSubOther() {
+		return subOther;
+	}
+	public void setSubOther(String subOther) {
+		this.subOther = subOther;
+	}
+	public String getSubTotal() {
+		return subTotal;
+	}
+	public void setSubTotal(String subTotal) {
+		this.subTotal = subTotal;
+	}
+	public String getDetails() {
+		return details;
+	}
+	public void setDetails(String details) {
+		this.details = details;
+	}
+	public String getPurpose() {
+		return purpose;
+	}
+	public void setPurpose(String purpose) {
+		this.purpose = purpose;
+	}
+	public String getTarget() {
+		return target;
+	}
+	public void setTarget(String target) {
+		this.target = target;
+	}
+	public String getContents() {
+		return contents;
+	}
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+	public String getExpectedResults() {
+		return expectedResults;
+	}
+	public void setExpectedResults(String expectedResults) {
+		this.expectedResults = expectedResults;
+	}
+	public String getApproval() {
+		return approval;
+	}
+	public void setApproval(String approval) {
+		this.approval = approval;
+	}
+	public String getResearchSubjects() {
+		return researchSubjects;
+	}
+	public void setResearchSubjects(String researchSubjects) {
+		this.researchSubjects = researchSubjects;
+	}
+	public String getKeywords() {
+		return keywords;
+	}
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
+	public String getOriginality() {
+		return originality;
+	}
+	public void setOriginality(String originality) {
+		this.originality = originality;
+	}
+	public String getAchievements() {
+		return achievements;
+	}
+	public void setAchievements(String achievements) {
+		this.achievements = achievements;
+	}
+	public String getOrgPrincipal() {
+		return orgPrincipal;
+	}
+	public void setOrgPrincipal(String orgPrincipal) {
+		this.orgPrincipal = orgPrincipal;
+	}
+	public String getAffiliation() {
+		return affiliation;
+	}
+	public void setAffiliation(String affiliation) {
+		this.affiliation = affiliation;
+	}
+	public String getAge0() {
+		return age0;
+	}
+	public void setAge0(String age0) {
+		this.age0 = age0;
+	}
+	public String getRole0() {
+		return role0;
+	}
+	public void setRole0(String role0) {
+		this.role0 = role0;
+	}
+	public String getCoordinator1() {
+		return coordinator1;
+	}
+	public void setCoordinator1(String coordinator1) {
+		this.coordinator1 = coordinator1;
+	}
+	public String getAffiliation1() {
+		return affiliation1;
+	}
+	public void setAffiliation1(String affiliation1) {
+		this.affiliation1 = affiliation1;
+	}
+	public String getAge1() {
+		return age1;
+	}
+	public void setAge1(String age1) {
+		this.age1 = age1;
+	}
+	public String getRole1() {
+		return role1;
+	}
+	public void setRole1(String role1) {
+		this.role1 = role1;
+	}
+	public String getCoordinator2() {
+		return coordinator2;
+	}
+	public void setCoordinator2(String coordinator2) {
+		this.coordinator2 = coordinator2;
+	}
+	public String getAffiliation2() {
+		return affiliation2;
+	}
+	public void setAffiliation2(String affiliation2) {
+		this.affiliation2 = affiliation2;
+	}
+	public String getAge2() {
+		return age2;
+	}
+	public void setAge2(String age2) {
+		this.age2 = age2;
+	}
+	public String getRole2() {
+		return role2;
+	}
+	public void setRole2(String role2) {
+		this.role2 = role2;
+	}
+	public String getCoordinator3() {
+		return coordinator3;
+	}
+	public void setCoordinator3(String coordinator3) {
+		this.coordinator3 = coordinator3;
+	}
+	public String getAffiliation3() {
+		return affiliation3;
+	}
+	public void setAffiliation3(String affiliation3) {
+		this.affiliation3 = affiliation3;
+	}
+	public String getAge3() {
+		return age3;
+	}
+	public void setAge3(String age3) {
+		this.age3 = age3;
+	}
+	public String getRole3() {
+		return role3;
+	}
+	public void setRole3(String role3) {
+		this.role3 = role3;
+	}
+	public String getCoordinator4() {
+		return coordinator4;
+	}
+	public void setCoordinator4(String coordinator4) {
+		this.coordinator4 = coordinator4;
+	}
+	public String getAffiliation4() {
+		return affiliation4;
+	}
+	public void setAffiliation4(String affiliation4) {
+		this.affiliation4 = affiliation4;
+	}
+	public String getAge4() {
+		return age4;
+	}
+	public void setAge4(String age4) {
+		this.age4 = age4;
+	}
+	public String getRole4() {
+		return role4;
+	}
+	public void setRole4(String role4) {
+		this.role4 = role4;
+	}
+	public String getCoordinator5() {
+		return coordinator5;
+	}
+	public void setCoordinator5(String coordinator5) {
+		this.coordinator5 = coordinator5;
+	}
+	public String getAffiliation5() {
+		return affiliation5;
+	}
+	public void setAffiliation5(String affiliation5) {
+		this.affiliation5 = affiliation5;
+	}
+	public String getAge5() {
+		return age5;
+	}
+	public void setAge5(String age5) {
+		this.age5 = age5;
+	}
+	public String getRole5() {
+		return role5;
+	}
+	public void setRole5(String role5) {
+		this.role5 = role5;
+	}
+	public String getResearchContents() {
+		return researchContents;
+	}
+	public void setResearchContents(String researchContents) {
+		this.researchContents = researchContents;
+	}
+	public String getFile2() {
+		return file2;
+	}
+	public void setFile2(String file2) {
+		this.file2 = file2;
+	}
+	public LocalDate getDateCreated() {
+		return dateCreated;
+	}
+	public void setDateCreated(LocalDate dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+	public String getCountry1() {
+		return country1;
+	}
+	public void setCountry1(String country1) {
+		this.country1 = country1;
+	}
+	public String getCountry2() {
+		return country2;
+	}
+	public void setCountry2(String country2) {
+		this.country2 = country2;
+	}
+	public String getCountry3() {
+		return country3;
+	}
+	public void setCountry3(String country3) {
+		this.country3 = country3;
+	}
+	public String getCountry4() {
+		return country4;
+	}
+	public void setCountry4(String country4) {
+		this.country4 = country4;
+	}
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
+}
