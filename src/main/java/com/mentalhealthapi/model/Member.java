@@ -54,7 +54,9 @@ public class Member {
 	    private Integer deleteRequest;	 	   
 	    private LocalDate date;	    
 	    private String email_smart;
-	    private String role;		
+	    private String role;
+		private String speech_title;
+		private String message;
 
 		public String getName() {
 			return name;
@@ -394,8 +396,23 @@ public class Member {
 			this.role = role;
 		}
 
+		public String getSpeech_title() {
+		return speech_title;
+	}
 
-		public String getEmail_smart() {
+		public void setSpeech_title(String speech_title) {
+		this.speech_title = speech_title;
+	}
+		public String getMessage() {
+		return message;
+	}
+		public void setMessage(String message) {
+		this.message = message;
+	}
+
+
+
+	public String getEmail_smart() {
 			return email_smart;
 		}
 
