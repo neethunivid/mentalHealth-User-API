@@ -15,7 +15,7 @@ public class GptController {
     private final String gpt3ApiKey;  // Replace with your actual API key
 
     public GptController() {
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = new  RestTemplate();
         gpt3ApiKey = System.getenv("OPENAI_API_KEY");
     }
 

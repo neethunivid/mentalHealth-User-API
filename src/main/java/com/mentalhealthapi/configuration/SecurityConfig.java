@@ -42,7 +42,7 @@ public class SecurityConfig {
     	  return http.csrf().disable().cors().and()
                .authorizeHttpRequests()
                 .requestMatchers("/api/members/addMember","/login/authenticate", "/login/updateadminconfig",
-                		"/members/memberSearch","/api/grant-requests/create","/api/file/upload","/api/seminar/email",
+                		"/api/members/memberSearch","/api/grant-requests/create","/api/file/upload","/api/seminar/email",
                 		"/api/inquiry/add","/api/members/job","/api/members/prefList","api/magadd/checkEmail","/api/magadd/add","api/magadd/delete/**",
                 		"/api/magadd/getMagid","/api/file/download/**","/api/diagnose/save","/api/reservation/counselingReservationPage","api/reservation/reserveUserSlot").permitAll()
 

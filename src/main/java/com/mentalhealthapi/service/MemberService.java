@@ -92,7 +92,8 @@ public class MemberService {
 	public MemberService(MemberRepository memberRepository, MailmagazineRepository mailmagazineRepository,
 			MailmagazineUserRepository mailmagazineUserRepository, MailMagazineService mailMagazineService,
 			RemarksRepository remarksRepository, RemarksInitialRepository remarksInitialRepository,
-			MemberDeletedRepository memberDeletedRepository, EmailService emailservice, PrefectureRepository prefectureRepository,JobRepository jobRepository) {
+			MemberDeletedRepository memberDeletedRepository, EmailService emailservice,
+			PrefectureRepository prefectureRepository, JobRepository jobRepository) {
 		this.memberRepository = memberRepository;
 		this.mailmagazineRepository = mailmagazineRepository;
 		this.mailmagazineUserRepository = mailmagazineUserRepository;
@@ -189,11 +190,11 @@ public class MemberService {
 
 			predicates.add(cb.like(root.get("name"), "%" + request.getName() + "%"));
 		}
-		if (request.getMemberid() != null && request.getMemberid()!="" ) {
+		if (request.getMemberid() != null && request.getMemberid() != "") {
 
 			predicates.add(cb.equal(root.get("memberid"), request.getMemberid()));
 		}
-		if (request.getMemberno() != null && request.getMemberno() != "" ) {
+		if (request.getMemberno() != null && request.getMemberno() != "") {
 
 			predicates.add(cb.equal(root.get("memberno"), request.getMemberno()));
 		}
@@ -208,10 +209,10 @@ public class MemberService {
 		if (request.getEmail_pc() != null && request.getEmail_pc() != "") {
 
 			Predicate emailPcPredicate = cb.equal(root.get("email_pc"), request.getEmail_pc());
-		    Predicate emailMobPredicate = cb.equal(root.get("email_mob"), request.getEmail_pc());
-		    predicates.add(cb.or(emailPcPredicate, emailMobPredicate));
+			Predicate emailMobPredicate = cb.equal(root.get("email_mob"), request.getEmail_pc());
+			predicates.add(cb.or(emailPcPredicate, emailMobPredicate));
 		}
-		
+
 		if (request.getStatus() != null) {
 
 			predicates.add(cb.equal(root.get("status"), request.getStatus()));
@@ -247,8 +248,7 @@ public class MemberService {
 		// Apply pagination
 		query.setFirstResult(request.getPageNumber() * request.getPageSize());
 		query.setMaxResults(request.getPageSize());
-        
-		
+
 		// Create the response object and set the count
 		ApiListResponse<List<Member>> response = new ApiListResponse<>(1, null, query.getResultList(),
 				this.getCountOfFilteredMembers(request));
@@ -299,16 +299,16 @@ public class MemberService {
 		if (request.getStatus() != null) {
 
 			predicates.add(cb.equal(root.get("status"), request.getStatus()));
-		}else {
-		if (request.getWithdrawList() == false) {
-			Predicate statusNotEqual3 = cb.notEqual(root.get("status"), 3);
-			Predicate statusNotEqual5 = cb.notEqual(root.get("status"), 5);
-			predicates.add(cb.and(statusNotEqual3, statusNotEqual5));
 		} else {
-			Predicate statusEqual3 = cb.equal(root.get("status"), 3);
-			Predicate statusEqual5 = cb.equal(root.get("status"), 5);
-			predicates.add(cb.and(statusEqual3, statusEqual5));
-		}
+			if (request.getWithdrawList() == false) {
+				Predicate statusNotEqual3 = cb.notEqual(root.get("status"), 3);
+				Predicate statusNotEqual5 = cb.notEqual(root.get("status"), 5);
+				predicates.add(cb.and(statusNotEqual3, statusNotEqual5));
+			} else {
+				Predicate statusEqual3 = cb.equal(root.get("status"), 3);
+				Predicate statusEqual5 = cb.equal(root.get("status"), 5);
+				predicates.add(cb.and(statusEqual3, statusEqual5));
+			}
 		}
 		predicates.add(cb.equal(root.get("role"), "USER"));
 
@@ -411,23 +411,23 @@ public class MemberService {
 			throw new IllegalArgumentException("MemberId already exists");
 		}
 		if (StringUtils.hasText(request.getEmail_pc())) {
-		Boolean email =	this.checkEmail(request.getEmail_pc(), request.getEmail_pc());
-		  if(email==true) {
-			throw new IllegalArgumentException("Email already exists");
-		  }
+			Boolean email = this.checkEmail(request.getEmail_pc(), request.getEmail_pc());
+			if (email == true) {
+				throw new IllegalArgumentException("Email already exists");
+			}
 		}
 		if (StringUtils.hasText(request.getEmail_mob())) {
-			Boolean email =	this.checkEmail(request.getEmail_mob(), request.getEmail_pc());
-			  if(email==true) {
+			Boolean email = this.checkEmail(request.getEmail_mob(), request.getEmail_pc());
+			if (email == true) {
 				throw new IllegalArgumentException("Email already exists");
-			  }
 			}
+		}
 
 		Member member = new Member();
 
 		member.setRole("USER");
 		member.setMemberno(0);
-		member.setStatus(0);				
+		member.setStatus(0);
 		member.setName(request.getName());
 		member.setName2(request.getName2());
 		member.setNamek(request.getNamek());
@@ -453,7 +453,7 @@ public class MemberService {
 		member.setEmail_pc(request.getEmail_pc());
 		member.setEmail_mob(request.getEmail_mob());
 		member.setMailmagazine(request.getMailmagazine());
-		member.setRemarks_initial(request.getRemarks_initial());		
+		member.setRemarks_initial(request.getRemarks_initial());
 		member.setNgMember(0);
 		member.setDeleteRequest(0);
 		member.setDate(request.getDate());
@@ -461,12 +461,12 @@ public class MemberService {
 		member.setRole("USER");
 		member.setMemberno(1);
 		Member memberdata = memberRepository.save(member);
-		int mid = memberdata.getId();		
+		int mid = memberdata.getId();
 		member.setMemberno(mid);
 		member.setId(mid);
-		 memberRepository.save(member);		
-		
-		//save to mailmagazine if selected
+		memberRepository.save(member);
+
+		// save to mailmagazine if selected
 		MailMagazineDTO mailMagazineDTO = new MailMagazineDTO();
 		mailMagazineDTO.setEmailPc(member.getEmail_pc());
 		mailMagazineDTO.setEmailMob(member.getEmail_mob());
@@ -476,21 +476,21 @@ public class MemberService {
 		mailMagazineDTO.setName(member.getName());
 		mailMagazineService.processMailMagazine(mailMagazineDTO);
 		// SAVING THE REMARKS TO REMARKS TABLE ...
-				RemarksInitial remarksInitial = new RemarksInitial();
-				remarksInitial.setMember(mid);
-				remarksInitial.setTitle(request.getStatement_title());
-				remarksInitial.setText(request.getStatement_text());
-				remarksInitial.setNormal((byte) 0);
-				remarksInitial.setAnxiety((byte) 0);
-				remarksInitial.setBlackmail((byte) 0);
-				remarksInitial.setGrowingup((byte) 0);
-				remarksInitial.setOther((byte) 0);				
-				remarksInitial.setDate(LocalDateTime.now());
-				remarksInitial.setStatus(1);
-				RemarksInitial rmk = remarksInitialRepository.save(remarksInitial);
-				member.setRemarks_initial(rmk.getId());
-				memberRepository.save(member);
-				
+		RemarksInitial remarksInitial = new RemarksInitial();
+		remarksInitial.setMember(mid);
+		remarksInitial.setTitle(request.getStatement_title());
+		remarksInitial.setText(request.getStatement_text());
+		remarksInitial.setNormal((byte) 0);
+		remarksInitial.setAnxiety((byte) 0);
+		remarksInitial.setBlackmail((byte) 0);
+		remarksInitial.setGrowingup((byte) 0);
+		remarksInitial.setOther((byte) 0);
+		remarksInitial.setDate(LocalDateTime.now());
+		remarksInitial.setStatus(1);
+		RemarksInitial rmk = remarksInitialRepository.save(remarksInitial);
+		member.setRemarks_initial(rmk.getId());
+		memberRepository.save(member);
+
 		return memberdata;
 
 	}
@@ -500,23 +500,20 @@ public class MemberService {
 		if (memberRepository.findByMemberid(request.getMemberid()).isPresent() == true) {
 			throw new IllegalArgumentException("MemberId already exists");
 		}
-		if (StringUtils.hasText(request.getEmail_pc()))
-		 {
-		Boolean email =	this.checkEmail(request.getEmail_pc(), request.getEmail_pc());
-		  if(email==true) {
-			throw new IllegalArgumentException("Email already exists");
-		  }
-		}
-		if (StringUtils.hasText(request.getEmail_mob()))
-		 {
-			Boolean email =	this.checkEmail(request.getEmail_mob(), request.getEmail_pc());
-			  if(email==true) {
+		if (StringUtils.hasText(request.getEmail_pc())) {
+			Boolean email = this.checkEmail(request.getEmail_pc(), request.getEmail_pc());
+			if (email == true) {
 				throw new IllegalArgumentException("Email already exists");
-			  }
 			}
+		}
+		if (StringUtils.hasText(request.getEmail_mob())) {
+			Boolean email = this.checkEmail(request.getEmail_mob(), request.getEmail_pc());
+			if (email == true) {
+				throw new IllegalArgumentException("Email already exists");
+			}
+		}
 
-
-		Member member = new Member();		
+		Member member = new Member();
 		member.setName(request.getName());
 		member.setName2(request.getName2());
 		member.setNamek(request.getNamek());
@@ -552,7 +549,7 @@ public class MemberService {
 		if (request.getUser_type3() != null) {
 			member.setStatus(3);
 		}
-		
+
 		member.setNgMember(request.getNgMember());
 		member.setDeleteRequest(request.getDeleteRequest());
 		member.setDate(request.getDate());
@@ -560,12 +557,11 @@ public class MemberService {
 		member.setRole("USER");
 		member.setMemberno(1);
 		Member memberdata = memberRepository.save(member);
-		int mid = memberdata.getId();		
+		int mid = memberdata.getId();
 		member.setMemberno(mid);
 		member.setId(mid);
-		 memberRepository.save(member);
-		
-		
+		memberRepository.save(member);
+
 		MailMagazineDTO mailMagazineDTO = new MailMagazineDTO();
 		mailMagazineDTO.setEmailPc(request.getEmail_pc());
 		mailMagazineDTO.setEmailMob(request.getEmail_mob());
@@ -598,7 +594,7 @@ public class MemberService {
 		existingMember.setRemarks_initial(rmkid);
 		memberRepository.save(existingMember);
 
-		if (memberStatus == 1) {			 
+		if (memberStatus == 1) {
 			Remarks remarks = new Remarks();
 			remarks.setRemarkNo("RMK");
 			remarks.setMember(rmk.getMember());
@@ -623,14 +619,14 @@ public class MemberService {
 			remarksInitialRepository.save(rmk);
 		}
 		try {
-			//get pref name
+			// get pref name
 			Prefecture preftur = prefectureRepository.findById(existingMember.getPref()).orElse(null);
 			String pref = preftur.getName();
 			Job jobs = jobRepository.findById(Integer.parseInt(existingMember.getJob())).orElse(null);
 			String job = jobs.getName();
-			
-			//sendMemberRegistrationMail need room type
-			emailService.sendMemberEmail(member.getEmail_pc(), member.getName(), memberdata,pref,job);
+
+			// sendMemberRegistrationMail need room type
+			emailService.sendMemberEmail(member.getEmail_pc(), member.getName(), memberdata, pref, job);
 		} catch (MessagingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -645,9 +641,9 @@ public class MemberService {
 		if (member.getName() != null) {
 			existingMember.setName(member.getName());
 		}
-//		if (member.getMemberno()!=null ) {
-//        existingMember.setMemberno(member.getMemberno());
-//		}
+		// if (member.getMemberno()!=null ) {
+		// existingMember.setMemberno(member.getMemberno());
+		// }
 		if (member.getNamek() != null) {
 			existingMember.setNamek(member.getNamek());
 		}
@@ -735,34 +731,33 @@ public class MemberService {
 			existingMember.setEmail_smart(member.getEmail_smart());
 		}
 		existingMember.setChangeDate(LocalDate.now());
-		
-		
+
 		System.out.println("smart email>>>" + existingMember.getEmail_smart().toString());
 
-		   if (member.getMailmagazine() == 2) {
-			    System.out.println(member.getId());
-	            MailmagazineUser mid = mailmagazineUserRepository.findByMember(member.getId());
-	            if(mid!=null)
-	            mailmagazineUserRepository.deleteById(mid.getId());
-	        } else if (member.getMailmagazine() == 1) {
-	            MailmagazineUser mailUser = new MailmagazineUser();
-	            mailUser.setMember(existingMember.getId());
-	            mailUser.setEmail(existingMember.getEmail_pc());
-	            mailUser.setEmailMob(existingMember.getEmail_mob());
-	            mailUser.setDate(LocalDate.now());
-	            mailUser.setId(300);
-	            mailUser.setStatus(1);
-	            mailmagazineRepository.save(mailUser);
-	        }
-		   Member memberUpdated=memberRepository.save(existingMember);
-		   String [] cc= {"bijila@nivid.co","neethu@nivid.co"};
-			
-		   //Sending mail to user 
-		   if(memberUpdated.getEmail_pc()!=null)
-		       emailService.sendUserEditMail(member,member.getEmail_pc(),cc);
-		   else
-			   emailService.sendUserEditMail(member,member.getEmail_mob(),cc);
-			     
+		if (member.getMailmagazine() == 2) {
+			System.out.println(member.getId());
+			MailmagazineUser mid = mailmagazineUserRepository.findByMember(member.getId());
+			if (mid != null)
+				mailmagazineUserRepository.deleteById(mid.getId());
+		} else if (member.getMailmagazine() == 1) {
+			MailmagazineUser mailUser = new MailmagazineUser();
+			mailUser.setMember(existingMember.getId());
+			mailUser.setEmail(existingMember.getEmail_pc());
+			mailUser.setEmailMob(existingMember.getEmail_mob());
+			mailUser.setDate(LocalDate.now());
+			mailUser.setId(300);
+			mailUser.setStatus(1);
+			mailmagazineRepository.save(mailUser);
+		}
+		Member memberUpdated = memberRepository.save(existingMember);
+		String[] cc = { "bijila@nivid.co", "neethu@nivid.co" };
+
+		// Sending mail to user
+		if (memberUpdated.getEmail_pc() != null)
+			emailService.sendUserEditMail(member, member.getEmail_pc(), cc);
+		else
+			emailService.sendUserEditMail(member, member.getEmail_mob(), cc);
+
 		return memberUpdated;
 
 	}
@@ -775,312 +770,310 @@ public class MemberService {
 	 */
 
 	public Member updateMemberAdmin_old(MemberRequest request) {
-	    Member existingMember = memberRepository.findById(request.getId())
-	            .orElseThrow(() -> new RuntimeException("Member not found"));
-	    Integer MagSub =existingMember.getMailmagazine();
-	    // Update member properties
-	    existingMember.setName(request.getName());
-	    existingMember.setMemberno(request.getMemberno());
-	    existingMember.setNamek(request.getNamek());
-	    existingMember.setName2(request.getName2());
-	    existingMember.setNamek2(request.getNamek2());
-	    existingMember.setMemberid(request.getMemberid());
-	    existingMember.setStatus(request.getStatus());
-	    existingMember.setPassword(request.getPassword());
-	    existingMember.setSex(request.getSex());
-	    existingMember.setDob(request.getDob());
-	    existingMember.setJob(request.getJob());
-	    existingMember.setJob_additional(request.getJob_additional());
-	    existingMember.setZipcode(request.getZipcode());
-	    existingMember.setPref(request.getPref());
-	    existingMember.setAddress1(request.getAddress1());
-	    existingMember.setAddress2(request.getAddress2());
-	    existingMember.setAddress3(request.getAddress3());
-	    existingMember.setTel(request.getTel());
-	    existingMember.setWorkplace(request.getWorkplace());
-	    existingMember.setMob(request.getMob());
-	    existingMember.setHowfound(request.getHowfound());
-	    existingMember.setEmail_pc(request.getEmail_pc());
-	    existingMember.setEmail_mob(request.getEmail_mob());
-	    existingMember.setMailmagazine(request.getMailmagazine());
-	    existingMember.setRemarks_initial(request.getRemarks_initial());
-	    existingMember.setJoinDate(request.getJoinDate());
-	    existingMember.setChangeDate(request.getChangeDate());
-	    existingMember.setChangeCause(request.getChangeCause());
-	    existingMember.setNgMember(request.getNgMember());
-	    existingMember.setDeleteRequest(request.getDeleteRequest());
-	    existingMember.setDate(request.getDate());
-	    existingMember.setEmail_smart(request.getEmail_smart());
+		Member existingMember = memberRepository.findById(request.getId())
+				.orElseThrow(() -> new RuntimeException("Member not found"));
+		Integer MagSub = existingMember.getMailmagazine();
+		// Update member properties
+		existingMember.setName(request.getName());
+		existingMember.setMemberno(request.getMemberno());
+		existingMember.setNamek(request.getNamek());
+		existingMember.setName2(request.getName2());
+		existingMember.setNamek2(request.getNamek2());
+		existingMember.setMemberid(request.getMemberid());
+		existingMember.setStatus(request.getStatus());
+		existingMember.setPassword(request.getPassword());
+		existingMember.setSex(request.getSex());
+		existingMember.setDob(request.getDob());
+		existingMember.setJob(request.getJob());
+		existingMember.setJob_additional(request.getJob_additional());
+		existingMember.setZipcode(request.getZipcode());
+		existingMember.setPref(request.getPref());
+		existingMember.setAddress1(request.getAddress1());
+		existingMember.setAddress2(request.getAddress2());
+		existingMember.setAddress3(request.getAddress3());
+		existingMember.setTel(request.getTel());
+		existingMember.setWorkplace(request.getWorkplace());
+		existingMember.setMob(request.getMob());
+		existingMember.setHowfound(request.getHowfound());
+		existingMember.setEmail_pc(request.getEmail_pc());
+		existingMember.setEmail_mob(request.getEmail_mob());
+		existingMember.setMailmagazine(request.getMailmagazine());
+		existingMember.setRemarks_initial(request.getRemarks_initial());
+		existingMember.setJoinDate(request.getJoinDate());
+		existingMember.setChangeDate(request.getChangeDate());
+		existingMember.setChangeCause(request.getChangeCause());
+		existingMember.setNgMember(request.getNgMember());
+		existingMember.setDeleteRequest(request.getDeleteRequest());
+		existingMember.setDate(request.getDate());
+		existingMember.setEmail_smart(request.getEmail_smart());
 
-	    // Save updated member
-	    Member member = memberRepository.save(existingMember);
+		// Save updated member
+		Member member = memberRepository.save(existingMember);
 
-	   
-	    // Update mailmagazineUser if necessary
-	    if (request.getMailmagazine() != null && !MagSub.equals(request.getMailmagazine())) {
-	        if (request.getMailmagazine() == 2) {
-	            MailmagazineUser mid = mailmagazineUserRepository.findByMember(request.getId());
-	            mailmagazineUserRepository.deleteById(mid.getId());
-	        } else if (request.getMailmagazine() == 1) {
-	            MailmagazineUser mailUser = new MailmagazineUser();
-	            mailUser.setEmail(existingMember.getEmail_pc());
-	            mailUser.setEmailMob(existingMember.getEmail_mob());
-	            mailUser.setDate(LocalDate.now());
-	            mailUser.setMember(existingMember.getId());
-	            mailUser.setStatus(1);
-	            mailmagazineRepository.save(mailUser);
-	        }
-	    }
+		// Update mailmagazineUser if necessary
+		if (request.getMailmagazine() != null && !MagSub.equals(request.getMailmagazine())) {
+			if (request.getMailmagazine() == 2) {
+				MailmagazineUser mid = mailmagazineUserRepository.findByMember(request.getId());
+				mailmagazineUserRepository.deleteById(mid.getId());
+			} else if (request.getMailmagazine() == 1) {
+				MailmagazineUser mailUser = new MailmagazineUser();
+				mailUser.setEmail(existingMember.getEmail_pc());
+				mailUser.setEmailMob(existingMember.getEmail_mob());
+				mailUser.setDate(LocalDate.now());
+				mailUser.setMember(existingMember.getId());
+				mailUser.setStatus(1);
+				mailmagazineRepository.save(mailUser);
+			}
+		}
 
-	    if(request.getStatus()==3 || request.getStatus()==5) {
-	    	 MemberDeleted memDel = memberDeletedRepository.findByMember(existingMember.getId());
-	    	
-	    	 if(memDel != null && memDel.getMailmagazine() == 1) {
-	    	 MailmagazineUser maguser = mailmagazineUserRepository.findByMember(existingMember.getId());
-	    	 maguser.setStatus(2);
-	    	 mailmagazineUserRepository.save(maguser);
-	    	 
-	    	 }
-	    }
-	    // Update RemarksInitial
-	    Optional<RemarksInitial> optionalRemarksInitial = remarksInitialRepository.findById(existingMember.getRemarks_initial());
-	    RemarksInitial rmkIni = optionalRemarksInitial.orElse(new RemarksInitial()); // Default RemarksInitial object if not found
-	    
-	    rmkIni.setMember(existingMember.getId());
-	    rmkIni.setTitle(request.getStatement_title());
-	    rmkIni.setText(request.getStatement_text());
-	    rmkIni.setNormal(request.getNormal());
-	    rmkIni.setAnxiety(request.getAnxiety());
-	    rmkIni.setBlackmail(request.getBlackmail());
-	    rmkIni.setGrowingup(request.getGrowingup());
-	    rmkIni.setOther(request.getOther());
-	    rmkIni.setAddition1(request.getAddition1());
-	    rmkIni.setAddition2(request.getAddition2());
-	    rmkIni.setRemarkNo("");
-	    
-	    if (request.isChk_add1() && request.getAddition1() != null) {
-	        rmkIni.setAddition1(request.getAddition1());
-	    }
-	    if (request.isChk_add2() && request.getAddition2() != null) {
-	        rmkIni.setAddition2(request.getAddition2());
-	    }
-	    rmkIni.setDate(LocalDateTime.now());
-	    rmkIni.setStatus(1);
-	    remarksInitialRepository.save(rmkIni);
+		if (request.getStatus() == 3 || request.getStatus() == 5) {
+			MemberDeleted memDel = memberDeletedRepository.findByMember(existingMember.getId());
 
-	    // Create Remarks if member status is 1
-	    if (existingMember.getStatus() == 1) {
-	    	List<Remarks> remarksList = remarksRepository.findAllByMemberOrderByDateAsc(existingMember.getId());
-	   
-	    	Remarks remarks = null;
-            if (!remarksList.isEmpty()) {
-                remarks = remarksList.get(0); 
-            } else {
-                remarks = new Remarks();
-            }
-	        remarks.setRemarkNo("RMK");      
-	        remarks.setMember(rmkIni.getMember());
-	        remarks.setNormal(rmkIni.getNormal());
-	        remarks.setAnxiety(rmkIni.getAnxiety());
-	        remarks.setBlackmail(rmkIni.getBlackmail());
-	        remarks.setOther(rmkIni.getOther());
-	        remarks.setGrowingup(rmkIni.getGrowingup());	     
-	        remarks.setAddition1(rmkIni.getAddition1());
-	        remarks.setAddition2(rmkIni.getAddition2());
-	        remarks.setTitle(rmkIni.getTitle());
-	        remarks.setText(rmkIni.getText());
-	        remarks.setStatus(1);
-	        remarks.setRemarks(rmkIni.getRemarks());
-	        if (remarks.getId() == null) {
-	            remarks.setDate(rmkIni.getDate());
-	            remarks.setStatus(1);
-	        }
-	        remarksRepository.save(remarks);
-	        if (remarks.getRemarkNo() == "RMK") {
-	            remarks.setRemarkNo(generateRMKNo(remarks.getId()));
-	            remarksRepository.save(remarks);
-	        }
-	    }
+			if (memDel != null && memDel.getMailmagazine() == 1) {
+				MailmagazineUser maguser = mailmagazineUserRepository.findByMember(existingMember.getId());
+				maguser.setStatus(2);
+				mailmagazineUserRepository.save(maguser);
 
-	    
-	    if(request.getStatus()==3 || request.getStatus()==5) {
-	    	 MemberDeleted memDel = memberDeletedRepository.findByMember(existingMember.getId());
-	    	
-	    	
-	    	 if (memDel==null) {
-	    		 //insert to member delete table
-	    		// Map member fields to deleted member
-	    		 Optional<Member> memb = memberRepository.findById(existingMember.getId());
-	    		 if (memb.isPresent()) {
-	    			    Member member1 = memb.get();	
-	    			    MemberDeleted deletedMember = new MemberDeleted();
-	    			    deletedMember.setMember(existingMember.getId());
-	    			    deletedMember.setName(member1.getName());	    			   
-	    			    deletedMember.setMemberno(member1.getMemberno());   
-	    			    deletedMember.setNamek(member1.getNamek());	    			    
-	    			    deletedMember.setMemberid(member1.getMemberid());
-	    			    deletedMember.setStatus(member1.getStatus());
-	    			    deletedMember.setPassword(member1.getPassword());
-	    			    deletedMember.setSex(member1.getSex());
-	    			    deletedMember.setDob(member1.getDob());
-	    			    deletedMember.setJob(member1.getJob());
-	    			    //deletedMember.setJob_additional(member1.getJob_additional());
-	    			   // deletedMember.setZipcode(member1.getZipcode());
-	    			    //deletedMember.setEmail_mob(member1.getEmail_mob());
-	    			    deletedMember.setAddress1(member1.getAddress1());
-	    			    deletedMember.setAddress2(member1.getAddress2());
-	    			    deletedMember.setAddress3(member1.getAddress3());
-	    			    deletedMember.setTel(member1.getTel());
-	    			    deletedMember.setWorkplace(member1.getWorkplace());
-	    			    deletedMember.setMob(member1.getMob());
-	    			    deletedMember.setHowfound(member1.getHowfound());
-	    			    deletedMember.setEmailPc(member1.getEmail_pc());
-	    			    deletedMember.setMailmagazine(member1.getMailmagazine());
-	    			    deletedMember.setRemarks_initial(member1.getRemarks_initial());
-	    			    deletedMember.setJoinDate(member1.getJoinDate());
-	    			    deletedMember.setChangeDate(member1.getChangeDate());
-	    			    deletedMember.setChangeCause(member1.getChangeCause());
-	    			   // deletedMember.setNgMember(member1.getNgMember());
-	    			   // deletedMember.setDeleteRequest(member1.getDeleteRequest());
-	    			    deletedMember.setDate(member1.getDate());
-	    			    deletedMember.setEmailSmart(member1.getEmail_smart());	    			   
-	    			    deletedMember.setDateEffect(LocalDateTime.now());	    			   
-	    			    memberDeletedRepository.save(deletedMember);
-	    			} 
-	    		 
-	    	 }
-	    }
+			}
+		}
+		// Update RemarksInitial
+		Optional<RemarksInitial> optionalRemarksInitial = remarksInitialRepository
+				.findById(existingMember.getRemarks_initial());
+		RemarksInitial rmkIni = optionalRemarksInitial.orElse(new RemarksInitial()); // Default RemarksInitial object if
+																						// not found
 
-	    String room = "";
-	    if (request.getNormal() != 0) {
-	        room = "普通神経症";
-	    } else if (request.getAnxiety() != 0) {
-	        room = "不安神経症";
-	    } else if (request.getBlackmail() != 0) {
-	        room = "強迫神経症";
-	    } else if (request.getOther() != 0) {
-	        room = "その他";
-	    } else if (request.getGrowingup() != 0) {
-	        room = "成長の部屋";
-	    } else if (request.getAddition1() != null) {
-	        room = "新規1";
-	    } else if (request.getAddition2() != null) {
-	        room = "新規２";
-	    }
+		rmkIni.setMember(existingMember.getId());
+		rmkIni.setTitle(request.getStatement_title());
+		rmkIni.setText(request.getStatement_text());
+		rmkIni.setNormal(request.getNormal());
+		rmkIni.setAnxiety(request.getAnxiety());
+		rmkIni.setBlackmail(request.getBlackmail());
+		rmkIni.setGrowingup(request.getGrowingup());
+		rmkIni.setOther(request.getOther());
+		rmkIni.setAddition1(request.getAddition1());
+		rmkIni.setAddition2(request.getAddition2());
+		rmkIni.setRemarkNo("");
 
-	    try {
-	    	if(request.getStatus()==1) {
-	        emailService.sendMemberRegistrationMail(member.getEmail_pc(), member.getName(), room, member);
-	    	}
-	    } catch (MessagingException e) {
-	        e.printStackTrace();
-	    }
+		if (request.isChk_add1() && request.getAddition1() != null) {
+			rmkIni.setAddition1(request.getAddition1());
+		}
+		if (request.isChk_add2() && request.getAddition2() != null) {
+			rmkIni.setAddition2(request.getAddition2());
+		}
+		rmkIni.setDate(LocalDateTime.now());
+		rmkIni.setStatus(1);
+		remarksInitialRepository.save(rmkIni);
 
-	    return member;
+		// Create Remarks if member status is 1
+		if (existingMember.getStatus() == 1) {
+			List<Remarks> remarksList = remarksRepository.findAllByMemberOrderByDateAsc(existingMember.getId());
+
+			Remarks remarks = null;
+			if (!remarksList.isEmpty()) {
+				remarks = remarksList.get(0);
+			} else {
+				remarks = new Remarks();
+			}
+			remarks.setRemarkNo("RMK");
+			remarks.setMember(rmkIni.getMember());
+			remarks.setNormal(rmkIni.getNormal());
+			remarks.setAnxiety(rmkIni.getAnxiety());
+			remarks.setBlackmail(rmkIni.getBlackmail());
+			remarks.setOther(rmkIni.getOther());
+			remarks.setGrowingup(rmkIni.getGrowingup());
+			remarks.setAddition1(rmkIni.getAddition1());
+			remarks.setAddition2(rmkIni.getAddition2());
+			remarks.setTitle(rmkIni.getTitle());
+			remarks.setText(rmkIni.getText());
+			remarks.setStatus(1);
+			remarks.setRemarks(rmkIni.getRemarks());
+			if (remarks.getId() == null) {
+				remarks.setDate(rmkIni.getDate());
+				remarks.setStatus(1);
+			}
+			remarksRepository.save(remarks);
+			if (remarks.getRemarkNo() == "RMK") {
+				remarks.setRemarkNo(generateRMKNo(remarks.getId()));
+				remarksRepository.save(remarks);
+			}
+		}
+
+		if (request.getStatus() == 3 || request.getStatus() == 5) {
+			MemberDeleted memDel = memberDeletedRepository.findByMember(existingMember.getId());
+
+			if (memDel == null) {
+				// insert to member delete table
+				// Map member fields to deleted member
+				Optional<Member> memb = memberRepository.findById(existingMember.getId());
+				if (memb.isPresent()) {
+					Member member1 = memb.get();
+					MemberDeleted deletedMember = new MemberDeleted();
+					deletedMember.setMember(existingMember.getId());
+					deletedMember.setName(member1.getName());
+					deletedMember.setMemberno(member1.getMemberno());
+					deletedMember.setNamek(member1.getNamek());
+					deletedMember.setMemberid(member1.getMemberid());
+					deletedMember.setStatus(member1.getStatus());
+					deletedMember.setPassword(member1.getPassword());
+					deletedMember.setSex(member1.getSex());
+					deletedMember.setDob(member1.getDob());
+					deletedMember.setJob(member1.getJob());
+					// deletedMember.setJob_additional(member1.getJob_additional());
+					// deletedMember.setZipcode(member1.getZipcode());
+					// deletedMember.setEmail_mob(member1.getEmail_mob());
+					deletedMember.setAddress1(member1.getAddress1());
+					deletedMember.setAddress2(member1.getAddress2());
+					deletedMember.setAddress3(member1.getAddress3());
+					deletedMember.setTel(member1.getTel());
+					deletedMember.setWorkplace(member1.getWorkplace());
+					deletedMember.setMob(member1.getMob());
+					deletedMember.setHowfound(member1.getHowfound());
+					deletedMember.setEmailPc(member1.getEmail_pc());
+					deletedMember.setMailmagazine(member1.getMailmagazine());
+					deletedMember.setRemarks_initial(member1.getRemarks_initial());
+					deletedMember.setJoinDate(member1.getJoinDate());
+					deletedMember.setChangeDate(member1.getChangeDate());
+					deletedMember.setChangeCause(member1.getChangeCause());
+					// deletedMember.setNgMember(member1.getNgMember());
+					// deletedMember.setDeleteRequest(member1.getDeleteRequest());
+					deletedMember.setDate(member1.getDate());
+					deletedMember.setEmailSmart(member1.getEmail_smart());
+					deletedMember.setDateEffect(LocalDateTime.now());
+					memberDeletedRepository.save(deletedMember);
+				}
+
+			}
+		}
+
+		String room = "";
+		if (request.getNormal() != 0) {
+			room = "普通神経症";
+		} else if (request.getAnxiety() != 0) {
+			room = "不安神経症";
+		} else if (request.getBlackmail() != 0) {
+			room = "強迫神経症";
+		} else if (request.getOther() != 0) {
+			room = "その他";
+		} else if (request.getGrowingup() != 0) {
+			room = "成長の部屋";
+		} else if (request.getAddition1() != null) {
+			room = "新規1";
+		} else if (request.getAddition2() != null) {
+			room = "新規２";
+		}
+
+		try {
+			if (request.getStatus() == 1) {
+				emailService.sendMemberRegistrationMail(member.getEmail_pc(), member.getName(), room, member);
+			}
+		} catch (MessagingException e) {
+			e.printStackTrace();
+		}
+
+		return member;
 	}
-	
-	
+
 	@Transactional
-    public Member updateMemberAdmin(MemberRequest request) {
-        Member existingMember = memberRepository.findById(request.getId())
-                .orElseThrow(() -> new RuntimeException("Member not found"));
-        Integer MagSub =existingMember.getMailmagazine();
+	public Member updateMemberAdmin(MemberRequest request) {
+		Member existingMember = memberRepository.findById(request.getId())
+				.orElseThrow(() -> new RuntimeException("Member not found"));
+		Integer MagSub = existingMember.getMailmagazine();
 
-        // Update member properties
-        updateMemberProperties(existingMember, request);
-        
-        // Save updated member
-        Member member = memberRepository.save(existingMember);
+		// Update member properties
+		updateMemberProperties(existingMember, request);
 
-        // Update mailmagazineUser if necessary
-        updateMailmagazineUser(request, existingMember,MagSub);
+		// Save updated member
+		Member member = memberRepository.save(existingMember);
 
-        // Update RemarksInitial
-        updateRemarksInitial(existingMember, request);
+		// Update mailmagazineUser if necessary
+		updateMailmagazineUser(request, existingMember, MagSub);
 
-        // Create Remarks if member status is 1
-        if (existingMember.getStatus() == 1) {
-            createRemarks(existingMember, request);
-        }
+		// Update RemarksInitial
+		updateRemarksInitial(existingMember, request);
 
-        // Delete member from member_deleted table if necessary
-        if(request.getStatus()==3 || request.getStatus()==5) {
-	    	 MailmagazineUser maguser = mailmagazineUserRepository.findByMember(existingMember.getId());
-	    	 if(maguser != null && maguser.getStatus() == 1) {
-	    	 maguser.setStatus(2);
-	    	 mailmagazineUserRepository.save(maguser);	    	 
-	    	 }
-	    }
-        if (request.getStatus() == 3 || request.getStatus() == 5) {
-            deleteMemberFromDeletedTable(existingMember);
-        }
+		// Create Remarks if member status is 1
+		if (existingMember.getStatus() == 1) {
+			createRemarks(existingMember, request);
+		}
 
-        String room = "";
-	    if (request.getNormal() != 0) {
-	        room = "普通神経症";
-	    } else if (request.getAnxiety() != 0) {
-	        room = "不安神経症";
-	    } else if (request.getBlackmail() != 0) {
-	        room = "強迫神経症";
-	    } else if (request.getOther() != 0) {
-	        room = "その他";
-	    } else if (request.getGrowingup() != 0) {
-	        room = "成長の部屋";
-	    } else if (request.getAddition1() != null) {
-	        room = "新規1";
-	    } else if (request.getAddition2() != null) {
-	        room = "新規２";
-	    }
+		// Delete member from member_deleted table if necessary
+		if (request.getStatus() == 3 || request.getStatus() == 5) {
+			MailmagazineUser maguser = mailmagazineUserRepository.findByMember(existingMember.getId());
+			if (maguser != null && maguser.getStatus() == 1) {
+				maguser.setStatus(2);
+				mailmagazineUserRepository.save(maguser);
+			}
+		}
+		if (request.getStatus() == 3 || request.getStatus() == 5) {
+			deleteMemberFromDeletedTable(existingMember);
+		}
 
-	    try {
-	    	if(request.getStatus()==1) {
-	        emailService.sendMemberRegistrationMail(member.getEmail_pc(), member.getName(), room, member);
-	    	}
-	    } catch (MessagingException e) {
-	        e.printStackTrace();
-	    }
+		String room = "";
+		if (request.getNormal() != 0) {
+			room = "普通神経症";
+		} else if (request.getAnxiety() != 0) {
+			room = "不安神経症";
+		} else if (request.getBlackmail() != 0) {
+			room = "強迫神経症";
+		} else if (request.getOther() != 0) {
+			room = "その他";
+		} else if (request.getGrowingup() != 0) {
+			room = "成長の部屋";
+		} else if (request.getAddition1() != null) {
+			room = "新規1";
+		} else if (request.getAddition2() != null) {
+			room = "新規２";
+		}
+		System.out.println("<I am here >>>"+request.getStatus());
+		try {
+			if (request.getStatus() == 1) {
+				emailService.sendMemberRegistrationMail(member.getEmail_pc(), member.getName(), room, member);
+			}
+		} catch (MessagingException e) {
+			
+			e.printStackTrace();
+		}
 
-	    return member;
+		return member;
 
-        
-    }
-	
+	}
+
 	private void updateMemberProperties(Member existingMember, MemberRequest request) {
 		existingMember.setName(request.getName());
-	    existingMember.setMemberno(request.getMemberno());
-	    existingMember.setNamek(request.getNamek());
-	    existingMember.setName2(request.getName2());
-	    existingMember.setNamek2(request.getNamek2());
-	    existingMember.setMemberid(request.getMemberid());
-	    existingMember.setStatus(request.getStatus());
-	    existingMember.setPassword(request.getPassword());
-	    existingMember.setSex(request.getSex());
-	    existingMember.setDob(request.getDob());
-	    existingMember.setJob(request.getJob());
-	    existingMember.setJob_additional(request.getJob_additional());
-	    existingMember.setZipcode(request.getZipcode());
-	    existingMember.setPref(request.getPref());
-	    existingMember.setAddress1(request.getAddress1());
-	    existingMember.setAddress2(request.getAddress2());
-	    existingMember.setAddress3(request.getAddress3());
-	    existingMember.setTel(request.getTel());
-	    existingMember.setWorkplace(request.getWorkplace());
-	    existingMember.setMob(request.getMob());
-	    existingMember.setHowfound(request.getHowfound());
-	    existingMember.setEmail_pc(request.getEmail_pc());
-	    existingMember.setEmail_mob(request.getEmail_mob());
-	    existingMember.setMailmagazine(request.getMailmagazine());
-	    existingMember.setRemarks_initial(request.getRemarks_initial());
-	    existingMember.setJoinDate(request.getJoinDate());
-	    existingMember.setChangeDate(request.getChangeDate());
-	    existingMember.setChangeCause(request.getChangeCause());
-	    existingMember.setNgMember(request.getNgMember());
-	    existingMember.setDeleteRequest(request.getDeleteRequest());
-	    existingMember.setDate(request.getDate());
-	    existingMember.setEmail_smart(request.getEmail_smart());
-    }
+		existingMember.setMemberno(request.getMemberno());
+		existingMember.setNamek(request.getNamek());
+		existingMember.setName2(request.getName2());
+		existingMember.setNamek2(request.getNamek2());
+		existingMember.setMemberid(request.getMemberid());
+		existingMember.setStatus(request.getStatus());
+		existingMember.setPassword(request.getPassword());
+		existingMember.setSex(request.getSex());
+		existingMember.setDob(request.getDob());
+		existingMember.setJob(request.getJob());
+		existingMember.setJob_additional(request.getJob_additional());
+		existingMember.setZipcode(request.getZipcode());
+		existingMember.setPref(request.getPref());
+		existingMember.setAddress1(request.getAddress1());
+		existingMember.setAddress2(request.getAddress2());
+		existingMember.setAddress3(request.getAddress3());
+		existingMember.setTel(request.getTel());
+		existingMember.setWorkplace(request.getWorkplace());
+		existingMember.setMob(request.getMob());
+		existingMember.setHowfound(request.getHowfound());
+		existingMember.setEmail_pc(request.getEmail_pc());
+		existingMember.setEmail_mob(request.getEmail_mob());
+		existingMember.setMailmagazine(request.getMailmagazine());
+		existingMember.setRemarks_initial(request.getRemarks_initial());
+		existingMember.setJoinDate(request.getJoinDate());
+		existingMember.setChangeDate(request.getChangeDate());
+		existingMember.setChangeCause(request.getChangeCause());
+		existingMember.setNgMember(request.getNgMember());
+		existingMember.setDeleteRequest(request.getDeleteRequest());
+		existingMember.setDate(request.getDate());
+		existingMember.setEmail_smart(request.getEmail_smart());
+	}
 
-    private void updateMailmagazineUser(MemberRequest request, Member existingMember,Integer magSub1) {
+	private void updateMailmagazineUser(MemberRequest request, Member existingMember, Integer magSub1) {
 
 		Integer magSub = existingMember.getMailmagazine();
 		Integer oldMagSub = magSub1;
@@ -1106,7 +1099,7 @@ public class MemberService {
 				magUser.setDate(LocalDate.now());
 				magUser.setMember(existingMember.getId());
 				magUser.setStatus(1);
-				
+
 				// Save the updated or newly created MailmagazineUser
 				mailmagazineUserRepository.save(magUser);
 
@@ -1114,114 +1107,115 @@ public class MemberService {
 		}
 	}
 
-    private void updateRemarksInitial(Member existingMember, MemberRequest request) {
-    	Optional<RemarksInitial> optionalRemarksInitial = remarksInitialRepository.findById(existingMember.getRemarks_initial());
-	    RemarksInitial rmkIni = optionalRemarksInitial.orElse(new RemarksInitial()); // Default RemarksInitial object if not found
-	    System.out.print("remark initial>>>>>r");
-	    rmkIni.setMember(existingMember.getId());
-	    rmkIni.setTitle(request.getStatement_title());
-	    rmkIni.setText(request.getStatement_text());
-	    rmkIni.setNormal(request.getNormal());
-	    rmkIni.setAnxiety(request.getAnxiety());
-	    rmkIni.setBlackmail(request.getBlackmail());
-	    rmkIni.setGrowingup(request.getGrowingup());
-	    rmkIni.setOther(request.getOther());
-	    rmkIni.setAddition1(request.getAddition1());
-	    rmkIni.setAddition2(request.getAddition2());
-	    rmkIni.setRemarkNo("");
-	    
-	    if (request.isChk_add1() && request.getAddition1() != null) {
-	        rmkIni.setAddition1(request.getAddition1());
-	    }
-	    if (request.isChk_add2() && request.getAddition2() != null) {
-	        rmkIni.setAddition2(request.getAddition2());
-	    }
-	    rmkIni.setDate(LocalDateTime.now());
-	    rmkIni.setStatus(1);
-	    remarksInitialRepository.save(rmkIni);
+	private void updateRemarksInitial(Member existingMember, MemberRequest request) {
+		Optional<RemarksInitial> optionalRemarksInitial = remarksInitialRepository
+				.findById(existingMember.getRemarks_initial());
+		RemarksInitial rmkIni = optionalRemarksInitial.orElse(new RemarksInitial()); // Default RemarksInitial object if
+																						// not found
+		System.out.print("remark initial>>>>>r");
+		rmkIni.setMember(existingMember.getId());
+		rmkIni.setTitle(request.getStatement_title());
+		rmkIni.setText(request.getStatement_text());
+		rmkIni.setNormal(request.getNormal());
+		rmkIni.setAnxiety(request.getAnxiety());
+		rmkIni.setBlackmail(request.getBlackmail());
+		rmkIni.setGrowingup(request.getGrowingup());
+		rmkIni.setOther(request.getOther());
+		rmkIni.setAddition1(request.getAddition1());
+		rmkIni.setAddition2(request.getAddition2());
+		rmkIni.setRemarkNo("");
 
-    }
+		if (request.isChk_add1() && request.getAddition1() != null) {
+			rmkIni.setAddition1(request.getAddition1());
+		}
+		if (request.isChk_add2() && request.getAddition2() != null) {
+			rmkIni.setAddition2(request.getAddition2());
+		}
+		rmkIni.setDate(LocalDateTime.now());
+		rmkIni.setStatus(1);
+		remarksInitialRepository.save(rmkIni);
 
-    private void createRemarks(Member existingMember, MemberRequest request) {
-    	Optional<RemarksInitial> optionalRemarksInitial = remarksInitialRepository.findById(existingMember.getRemarks_initial());
-	    RemarksInitial rmkIni = optionalRemarksInitial.orElse(new RemarksInitial());
-    	if (existingMember.getStatus() == 1) {
-	    	List<Remarks> remarksList = remarksRepository.findAllByMemberOrderByDateAsc(existingMember.getId());
-	   
-	    	Remarks remarks = null;
-            if (!remarksList.isEmpty()) {
-                remarks = remarksList.get(0); 
-            } else {
-                remarks = new Remarks();
-            }
-	        remarks.setRemarkNo("RMK");      
-	        remarks.setMember(rmkIni.getMember());
-	        remarks.setNormal(rmkIni.getNormal());
-	        remarks.setAnxiety(rmkIni.getAnxiety());
-	        remarks.setBlackmail(rmkIni.getBlackmail());
-	        remarks.setOther(rmkIni.getOther());
-	        remarks.setGrowingup(rmkIni.getGrowingup());	     
-	        remarks.setAddition1(rmkIni.getAddition1());
-	        remarks.setAddition2(rmkIni.getAddition2());
-	        remarks.setTitle(rmkIni.getTitle());
-	        remarks.setText(rmkIni.getText());
-	        remarks.setStatus(1);
-	        remarks.setRemarks(rmkIni.getRemarks());
-	        if (remarks.getId() == null) {
-	            remarks.setDate(rmkIni.getDate());
-	            remarks.setStatus(1);
-	        }
-	        remarksRepository.save(remarks);
-	        if (remarks.getRemarkNo() == "RMK") {
-	            remarks.setRemarkNo(generateRMKNo(remarks.getId()));
-	            remarksRepository.save(remarks);
-	        }
-	    }
-    }
+	}
 
-    private void deleteMemberFromDeletedTable(Member existingMember) {
-        MemberDeleted memDel = memberDeletedRepository.findByMember(existingMember.getId());
+	private void createRemarks(Member existingMember, MemberRequest request) {
+		Optional<RemarksInitial> optionalRemarksInitial = remarksInitialRepository
+				.findById(existingMember.getRemarks_initial());
+		RemarksInitial rmkIni = optionalRemarksInitial.orElse(new RemarksInitial());
+		if (existingMember.getStatus() == 1) {
+			List<Remarks> remarksList = remarksRepository.findAllByMemberOrderByDateAsc(existingMember.getId());
 
-        if (memDel==null) {
-   		 //insert to member delete table
-   		// Map member fields to deleted member
-   		 Optional<Member> memb = memberRepository.findById(existingMember.getId());
-   		 if (memb.isPresent()) {
-   			    Member member1 = memb.get();	
-   			    MemberDeleted deletedMember = new MemberDeleted();
-   			    deletedMember.setMember(existingMember.getId());
-   			    deletedMember.setName(member1.getName());	    			   
-   			    deletedMember.setMemberno(member1.getMemberno());   
-   			    deletedMember.setNamek(member1.getNamek());	    			    
-   			    deletedMember.setMemberid(member1.getMemberid());
-   			    deletedMember.setStatus(member1.getStatus());
-   			    deletedMember.setPassword(member1.getPassword());
-   			    deletedMember.setSex(member1.getSex());
-   			    deletedMember.setDob(member1.getDob());
-   			    deletedMember.setJob(member1.getJob());   			  
-   			    deletedMember.setAddress1(member1.getAddress1());
-   			    deletedMember.setAddress2(member1.getAddress2());
-   			    deletedMember.setAddress3(member1.getAddress3());
-   			    deletedMember.setTel(member1.getTel());
-   			    deletedMember.setWorkplace(member1.getWorkplace());
-   			    deletedMember.setMob(member1.getMob());
-   			    deletedMember.setHowfound(member1.getHowfound());
-   			    deletedMember.setEmailPc(member1.getEmail_pc());
-   			    deletedMember.setMailmagazine(member1.getMailmagazine());
-   			    deletedMember.setRemarks_initial(member1.getRemarks_initial());
-   			    deletedMember.setJoinDate(member1.getJoinDate());
-   			    deletedMember.setChangeDate(member1.getChangeDate());
-   			    deletedMember.setChangeCause(member1.getChangeCause());   			  
-   			    deletedMember.setDate(member1.getDate());
-   			    deletedMember.setEmailSmart(member1.getEmail_smart());	    			   
-   			    deletedMember.setDateEffect(LocalDateTime.now());	    			   
-   			    memberDeletedRepository.save(deletedMember);
-   			} 
-   		 
-   	 }
-    }
+			Remarks remarks = null;
+			if (!remarksList.isEmpty()) {
+				remarks = remarksList.get(0);
+			} else {
+				remarks = new Remarks();
+			}
+			remarks.setRemarkNo("RMK");
+			remarks.setMember(rmkIni.getMember());
+			remarks.setNormal(rmkIni.getNormal());
+			remarks.setAnxiety(rmkIni.getAnxiety());
+			remarks.setBlackmail(rmkIni.getBlackmail());
+			remarks.setOther(rmkIni.getOther());
+			remarks.setGrowingup(rmkIni.getGrowingup());
+			remarks.setAddition1(rmkIni.getAddition1());
+			remarks.setAddition2(rmkIni.getAddition2());
+			remarks.setTitle(rmkIni.getTitle());
+			remarks.setText(rmkIni.getText());
+			remarks.setStatus(1);
+			remarks.setRemarks(rmkIni.getRemarks());
+			if (remarks.getId() == null) {
+				remarks.setDate(rmkIni.getDate());
+				remarks.setStatus(1);
+			}
+			remarksRepository.save(remarks);
+			if (remarks.getRemarkNo() == "RMK") {
+				remarks.setRemarkNo(generateRMKNo(remarks.getId()));
+				remarksRepository.save(remarks);
+			}
+		}
+	}
 
-    
+	private void deleteMemberFromDeletedTable(Member existingMember) {
+		MemberDeleted memDel = memberDeletedRepository.findByMember(existingMember.getId());
+
+		if (memDel == null) {
+			// insert to member delete table
+			// Map member fields to deleted member
+			Optional<Member> memb = memberRepository.findById(existingMember.getId());
+			if (memb.isPresent()) {
+				Member member1 = memb.get();
+				MemberDeleted deletedMember = new MemberDeleted();
+				deletedMember.setMember(existingMember.getId());
+				deletedMember.setName(member1.getName());
+				deletedMember.setMemberno(member1.getMemberno());
+				deletedMember.setNamek(member1.getNamek());
+				deletedMember.setMemberid(member1.getMemberid());
+				deletedMember.setStatus(member1.getStatus());
+				deletedMember.setPassword(member1.getPassword());
+				deletedMember.setSex(member1.getSex());
+				deletedMember.setDob(member1.getDob());
+				deletedMember.setJob(member1.getJob());
+				deletedMember.setAddress1(member1.getAddress1());
+				deletedMember.setAddress2(member1.getAddress2());
+				deletedMember.setAddress3(member1.getAddress3());
+				deletedMember.setTel(member1.getTel());
+				deletedMember.setWorkplace(member1.getWorkplace());
+				deletedMember.setMob(member1.getMob());
+				deletedMember.setHowfound(member1.getHowfound());
+				deletedMember.setEmailPc(member1.getEmail_pc());
+				deletedMember.setMailmagazine(member1.getMailmagazine());
+				deletedMember.setRemarks_initial(member1.getRemarks_initial());
+				deletedMember.setJoinDate(member1.getJoinDate());
+				deletedMember.setChangeDate(member1.getChangeDate());
+				deletedMember.setChangeCause(member1.getChangeCause());
+				deletedMember.setDate(member1.getDate());
+				deletedMember.setEmailSmart(member1.getEmail_smart());
+				deletedMember.setDateEffect(LocalDateTime.now());
+				memberDeletedRepository.save(deletedMember);
+			}
+
+		}
+	}
 
 	/**
 	 * GenarateRNKNo remark no
@@ -1233,89 +1227,92 @@ public class MemberService {
 	private String generateRMKNo(Integer id) {
 		return "RMK_" + id;
 	}
-	
-	
+
 	public Map<String, Object> getMemberById(int id) {
-	    Member member = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
-	    List<Object[]> memberDataWithRemarks = memberRepository.getMemberDataWithRemarks(id);
-	    
-	    // Construct the response map
-	    Map<String, Object> responseMap = new HashMap<>();
+		Member member = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("Member not found"));
+		List<Object[]> memberDataWithRemarks = memberRepository.getMemberDataWithRemarks(id);
 
-	    // Map member data
-	    responseMap.put("member", memberDataWithRemarks != null && memberDataWithRemarks.size() > 0 ? memberDataWithRemarks.get(0)[0] : member);
-	    
-	    // Map remarks data
-	    List<Object> remarksList = new ArrayList<>();
-	    if (memberDataWithRemarks != null && memberDataWithRemarks.size() > 0) {
-	        if (memberDataWithRemarks.get(0).length > 1) {
-	            for (int i = 1; i < memberDataWithRemarks.get(0).length; i++) {
-	                remarksList.add(memberDataWithRemarks.get(0)[i]);
-	            }
-	        }
-	    }
-	    responseMap.put("remarks", remarksList);
+		// Construct the response map
+		Map<String, Object> responseMap = new HashMap<>();
 
-	    return responseMap;
+		// Map member data
+		responseMap.put("member",
+				memberDataWithRemarks != null && memberDataWithRemarks.size() > 0 ? memberDataWithRemarks.get(0)[0]
+						: member);
+
+		// Map remarks data
+		List<Object> remarksList = new ArrayList<>();
+		if (memberDataWithRemarks != null && memberDataWithRemarks.size() > 0) {
+			if (memberDataWithRemarks.get(0).length > 1) {
+				for (int i = 1; i < memberDataWithRemarks.get(0).length; i++) {
+					remarksList.add(memberDataWithRemarks.get(0)[i]);
+				}
+			}
+		}
+		responseMap.put("remarks", remarksList);
+
+		return responseMap;
 	}
 
-
-	
 	/**
 	 * get all withdraw users list
 	 */
-	
-	public List<Map<String, Object>> getAllWithdrawMembers( MemberDTO request) {
-	  
-	  PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize());
-	  List<Map<String, Object>> resultList = new ArrayList<>();
-	  Page<Object[]> memberAndDeletedInfo = memberRepository.getMemberAndDeletedInfo(pageRequest);
 
-	  for (Object[] objects : memberAndDeletedInfo.getContent()) {
-	      Member member = (Member) objects[0];
-	      MemberDeleted memberDeleted = (MemberDeleted) objects[1];
+	public List<Map<String, Object>> getAllWithdrawMembers(MemberDTO request) {
 
-	      String deletedReason = memberDeleted.getReasonLeaving(); // Assuming 'reasonLeaving' is the property for the deleted reason
+		PageRequest pageRequest = PageRequest.of(request.getPageNumber(), request.getPageSize());
+		List<Map<String, Object>> resultList = new ArrayList<>();
+		Page<Object[]> memberAndDeletedInfo = memberRepository.getMemberAndDeletedInfo(pageRequest);
 
-	      Map<String, Object> jsonObject = new HashMap<>();
-	      jsonObject.put("member", member);
-	      jsonObject.put("deletedReason", deletedReason);
+		for (Object[] objects : memberAndDeletedInfo.getContent()) {
+			Member member = (Member) objects[0];
+			MemberDeleted memberDeleted = (MemberDeleted) objects[1];
 
-	      resultList.add(jsonObject);
-	  }
+			String deletedReason = memberDeleted.getReasonLeaving(); // Assuming 'reasonLeaving' is the property for the
+																		// deleted reason
 
-	  return resultList;
+			Map<String, Object> jsonObject = new HashMap<>();
+			jsonObject.put("member", member);
+			jsonObject.put("deletedReason", deletedReason);
 
-	 }
+			resultList.add(jsonObject);
+		}
+
+		return resultList;
+
+	}
+
 	/**
 	 * get count of withdraw members
 	 */
 	public Long getCountWithdrawMembers() {
 		return memberRepository.getTotalMemberAndDeletedCount();
 	}
+
 	/**
 	 * get all member data with remarks
 	 */
 	public List<Map<String, Object>> memberManagement(MemberDTO request) {
-		  
-	  List<Map<String, Object>> resultList = new ArrayList<>();
-	 
-	  List<Object[]> memberAndDeletedInfo = memberRepository.getMemberWithRemarks(request.getStatus());
 
-	  for (Object[] objects : memberAndDeletedInfo) {
-	      Member member = (Member) objects[0];
-	      RemarksInitial ri = (RemarksInitial) objects[1];
-	      String title = ri.getTitle(); // Assuming 'reasonLeaving' is the property for the deleted reason
-	      Map<String, Object> jsonObject = new HashMap<>();
-	      jsonObject.put("member", member);
-	      jsonObject.put("remark", ri);
+		List<Map<String, Object>> resultList = new ArrayList<>();
 
-	      resultList.add(jsonObject);
-	  }
+		List<Object[]> memberAndDeletedInfo = memberRepository.getMemberWithRemarks(request.getStatus());
 
-	  return resultList;
+		for (Object[] objects : memberAndDeletedInfo) {
+			Member member = (Member) objects[0];
+			RemarksInitial ri = (RemarksInitial) objects[1];
+			String title = ri.getTitle(); // Assuming 'reasonLeaving' is the property for the deleted reason
+			Map<String, Object> jsonObject = new HashMap<>();
+			jsonObject.put("member", member);
+			jsonObject.put("remark", ri);
 
-	 }
+			resultList.add(jsonObject);
+		}
+
+		return resultList;
+
+	}
+
 	public Member validateUser(String memberid, String password) {
 		// return memberRepository.fin(id).orElse(null);
 		Member m = memberRepository.findByMemberidAndPasswordAndStatus(memberid, password);
@@ -1344,7 +1341,7 @@ public class MemberService {
 	public List<Object[]> getAllMemberData() {
 		return memberRepository.getMemberAndDeletedInfoByStatus();
 	}
-	
+
 	public List<Member> getAllMembers() {
 		return memberRepository.findAll();
 	}
@@ -1379,9 +1376,9 @@ public class MemberService {
 		return membr;
 		// return ResponseEntity.ok("Member deleted successfully");
 	}
-	
-    public String exportMemberDataCsv(MemberDataDownloadDTO request, HttpServletResponse response) {
-		
+
+	public String exportMemberDataCsv(MemberDataDownloadDTO request, HttpServletResponse response) {
+
 		response.setContentType("text/csv");
 		response.setCharacterEncoding("UTF-8"); // Set the character encoding
 		response.setContentType("text/csv; charset=UTF-8");
@@ -1390,55 +1387,59 @@ public class MemberService {
 		String headerValue = "attachment; filename=csvmember_details.csv";
 		response.setHeader(headerKey, headerValue);
 		List<Object[]> memberInfoList = null;
-		
-        if (request.getFromDate() != null) {
-        	  LocalDate date1 = LocalDate.parse(request.getFromDate());
-        	  LocalDate date2 = LocalDate.parse(request.getToDate());
-        	
-        	memberInfoList = memberRepository.getMemberInfoByDateRange(date1,date2);
-        }
-        if (request.isBatch())
+
+		if (request.getFromDate() != null) {
+			LocalDate date1 = LocalDate.parse(request.getFromDate());
+			LocalDate date2 = LocalDate.parse(request.getToDate());
+
+			memberInfoList = memberRepository.getMemberInfoByDateRange(date1, date2);
+		}
+		if (request.isBatch())
 			memberInfoList = memberRepository.getMemberInfoByIdAndStatusNot3AndNot5(1);
 		String[] csvHeader = null;
-		             
-		csvHeader = new String[] { "会員番号","	名前（漢字）","	名前（漢字）2","	ふりがな","	ふりがな2","	ID","	パスワード","	性別","	生年月日","	職業	","職業の詳細",	"県",	"住所１ （都道府）","	住所2 （市町村）","	住所3 （丁目番地）","	電話","	携帯","	勤め先・学校","	何で知ったか","	メールアドレス（PC）","	メールアドレス（携帯）","	メルマガ購読の有無","	タイプ区分","	入会日","	状況	"," 変更日","	理由","	発言タイトル","	発言内容"};
-		 try (CSVWriter csvWriter = new CSVWriter(response.getWriter())) {
-		//try (CSVWriter csvWriter = new CSVWriter(new FileWriter("csvmember_detail.csv"))) {
+
+		csvHeader = new String[] { "会員番号", "	名前（漢字）", "	名前（漢字）2", "	ふりがな", "	ふりがな2", "	ID", "	パスワード", "	性別",
+				"	生年月日", "	職業	", "職業の詳細", "県", "住所１ （都道府）", "	住所2 （市町村）", "	住所3 （丁目番地）", "	電話", "	携帯",
+				"	勤め先・学校", "	何で知ったか", "	メールアドレス（PC）", "	メールアドレス（携帯）", "	メルマガ購読の有無", "	タイプ区分", "	入会日", "	状況	",
+				" 変更日", "	理由", "	発言タイトル", "	発言内容" };
+		try (CSVWriter csvWriter = new CSVWriter(response.getWriter())) {
+			// try (CSVWriter csvWriter = new CSVWriter(new
+			// FileWriter("csvmember_detail.csv"))) {
 			// Write the CSV header
-			csvWriter.writeNext(csvHeader);			
+			csvWriter.writeNext(csvHeader);
 			for (Object[] objects : memberInfoList) {
-			    String[] csvRow = new String[objects.length];
-			    for (int i = 0; i < objects.length; i++) {
-			        if (i == 22) { // Assuming 22 is the index of the remark ID
-			            Integer remarkId = (Integer) objects[i];
-			            // Fetch remarks data by ID from the repository
-			            RemarksInitial remarks = remarksInitialRepository.findById(remarkId).orElse(null);	 
-			            if (remarks != null) {
-			                // Set values based on remarks fields
-			                if (remarks.getNormal()==1) {
-			                    csvRow[i] = "普通神経症";
-			                } else if (remarks.getAnxiety()==1) {
-			                    csvRow[i] = "不安神経症";
-			                } else if (remarks.getGrowingup()==1) {
-			                    csvRow[i] = "成長の部屋";
-			                } else if (remarks.getBlackmail()==1) {
-			                	csvRow[i] = "強迫神経症";
-			                } else if (remarks.getOther()==1) {
-			                    csvRow[i] = "その他";
-			                }else if (remarks.getAddition1()!= null) {
-			                	csvRow[i] = remarks.getAddition1();
-			                } else if (remarks.getAddition2()!= null){
-			                    csvRow[i] = remarks.getAddition2();
-			                }
-			            } else {
-			                csvRow[i] = ""; // Default value if remarks not found
-			            }
-			        } else {
-			            csvRow[i] = objects[i] != null ? objects[i].toString() : "";
-			        }
-			    }
-			    csvWriter.writeNext(csvRow);
-			csvWriter.flush();
+				String[] csvRow = new String[objects.length];
+				for (int i = 0; i < objects.length; i++) {
+					if (i == 22) { // Assuming 22 is the index of the remark ID
+						Integer remarkId = (Integer) objects[i];
+						// Fetch remarks data by ID from the repository
+						RemarksInitial remarks = remarksInitialRepository.findById(remarkId).orElse(null);
+						if (remarks != null) {
+							// Set values based on remarks fields
+							if (remarks.getNormal() == 1) {
+								csvRow[i] = "普通神経症";
+							} else if (remarks.getAnxiety() == 1) {
+								csvRow[i] = "不安神経症";
+							} else if (remarks.getGrowingup() == 1) {
+								csvRow[i] = "成長の部屋";
+							} else if (remarks.getBlackmail() == 1) {
+								csvRow[i] = "強迫神経症";
+							} else if (remarks.getOther() == 1) {
+								csvRow[i] = "その他";
+							} else if (remarks.getAddition1() != null) {
+								csvRow[i] = remarks.getAddition1();
+							} else if (remarks.getAddition2() != null) {
+								csvRow[i] = remarks.getAddition2();
+							}
+						} else {
+							csvRow[i] = ""; // Default value if remarks not found
+						}
+					} else {
+						csvRow[i] = objects[i] != null ? objects[i].toString() : "";
+					}
+				}
+				csvWriter.writeNext(csvRow);
+				csvWriter.flush();
 			}
 			// csvWriter.close();
 			return "CSV file created successfully.";
@@ -1447,38 +1448,31 @@ public class MemberService {
 			return "Failed to export file";
 		}
 
-
 	}
 
-    public String checkMemberId(Member request) {
-	if (memberRepository.findByMemberid(request.getMemberid()).isPresent() == true) {
-		return "MemberId already exists";
-	}else {
-		return "Memberid doesnot exist";
-	 }
-    }
+	public String checkMemberId(Member request) {
+		if (memberRepository.findByMemberid(request.getMemberid()).isPresent() == true) {
+			return "MemberId already exists";
+		} else {
+			return "Memberid doesnot exist";
+		}
+	}
 
-    public Boolean checkEmail(String emailPc, String emailMob) {
-    	List<Member> emailpc =memberRepository.findByEmailPcOrEmailMob(emailPc);
-    	if (emailpc.size()==0) {
-    		return false;    		
-    	}
-    	else return true;
-    }
+	public Boolean checkEmail(String emailPc, String emailMob) {
+		List<Member> emailpc = memberRepository.findByEmailPcOrEmailMob(emailPc);
+		if (emailpc.size() == 0) {
+			return false;
+		} else
+			return true;
+	}
 
-	
-    public List<Prefecture> prefList() {
-		
+	public List<Prefecture> prefList() {
+
 		return prefectureRepository.findAll();
 	}
 
 	public List<Job> jobList() {
 		return jobRepository.findAll();
 	}
-
-
-
-
-
 
 }
