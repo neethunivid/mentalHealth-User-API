@@ -55,7 +55,7 @@ public class MemberController {
      * @return
      */
     @PostMapping("/memberSearch")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    //@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
 	 public ResponseEntity<ApiResponse<List<Member>>> searchMembers(@RequestBody MemberDTO request) {
     	  List<Member> members = memberService.searchMember(request);    	 
     	  ApiResponse<List<Member>> response = new ApiResponse<>(1, null, members);	        
