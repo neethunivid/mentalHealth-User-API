@@ -34,7 +34,7 @@ public class MemberRequest {
     private String email_mob;    
     private Integer mailmagazine;    
     private Integer remarks_initial;    
-    
+    private String icon;
     private LocalDate joinDate;    
     
     private LocalDate changeDate;   
@@ -86,7 +86,13 @@ public class MemberRequest {
 	public void setStatement_text(String statement_text) {
 		this.statement_text = statement_text;
 	}
-	
+	public String getIcon() {
+		 return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
 	private byte normal;
 	 private byte anxiety;
 	 private byte blackmail;

@@ -57,6 +57,7 @@ public class Member {
 	    private String role;
 		private String speech_title;
 		private String message;
+		private String icon;
 
 		public String getName() {
 			return name;
@@ -408,6 +409,13 @@ public class Member {
 	}
 		public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 
 
