@@ -730,6 +730,18 @@ public class MemberService {
 		if (member.getEmail_smart() != null) {
 			existingMember.setEmail_smart(member.getEmail_smart());
 		}
+		if(member.getIcon() != null) {
+			existingMember.setIcon(member.getIcon());
+		}
+		if(member.getSpeech_title() != null) {
+			existingMember.setSpeech_title(member.getSpeech_title());
+		}
+		if(member.getSpeech_title() != null) {
+			existingMember.setSpeech_title(member.getSpeech_title());
+		}
+		if(member.getMessage() != null) {
+			existingMember.setMessage(member.getMessage());
+		}
 		existingMember.setChangeDate(LocalDate.now());
 
 		System.out.println("smart email>>>" + existingMember.getEmail_smart().toString());
@@ -750,7 +762,7 @@ public class MemberService {
 			mailmagazineRepository.save(mailUser);
 		}
 		Member memberUpdated = memberRepository.save(existingMember);
-		String[] cc = { "bijila@nivid.co", "neethu@nivid.co" };
+		String[] cc = { "vanisree.co", "neethu@nivid.co" };
 
 		// Sending mail to user
 		if (memberUpdated.getEmail_pc() != null)
@@ -1254,6 +1266,18 @@ public class MemberService {
 		return responseMap;
 	}
 
+	public void sendMemberEmail(int id) throws MessagingException {
+		Member member = memberRepository.findById(id)
+				.orElseThrow(() -> new IllegalArgumentException("Member not found"));
+		Prefecture prefecture = prefectureRepository.findById(member.getPref())
+				.orElseThrow(() -> new IllegalArgumentException("Member prefecture not found"));
+		Job job = jobRepository.findById(Integer.parseInt(member.getJob()))
+				.orElseThrow(() -> new IllegalArgumentException("Member job not found"));
+
+		emailService.sendMemberEmail(member.getEmail_pc(), member.getName(), member, prefecture.getName(),
+				job.getName());
+	}
+
 	/**
 	 * get all withdraw users list
 	 */
@@ -1369,10 +1393,14 @@ public class MemberService {
 
 		// Map member fields to deleted member
 		MemberDeleted deletedMember = modelMapper.map(member, MemberDeleted.class);
+		String[] cc = { "vanisree@nivid.co", "neethu@nivid.co" };
 
 		deletedMember.setDateEffect(LocalDateTime.now());
 		// memberDeletedRepository.save(deletedMember);
-
+		if (member.getEmail_pc() != null)
+			emailService.sendUserDeletedMail(member, member.getEmail_pc(), cc);
+		else
+			emailService.sendUserDeletedMail(member, member.getEmail_mob(), cc);
 		return membr;
 		// return ResponseEntity.ok("Member deleted successfully");
 	}

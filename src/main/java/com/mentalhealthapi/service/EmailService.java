@@ -42,8 +42,7 @@ public class EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
         // Set recipient, subject, and email content
-        //helper.setTo(recipientEmail);
-        helper.setTo("remitha@nivid.co");
+        helper.setTo(recipientEmail);
         helper.setSubject("Member Registration Confirmation");
      
         // Prepare the context with data for the template
@@ -491,6 +490,34 @@ public class EmailService {
 		return "Mail Send";
 	}
 
+    public String sendUserDeletedMail(Member request,String email,String[] cc){
+
+        String subject = "会員登録情報の修正";
+        String to = email;
+
+        StringBuilder body = new StringBuilder();
+        body.append(request.getName()).append(" ").append(request.getName2()).append("　様\n\n");
+        body.append("これまで当メンタルヘルス財団の「心の体験フォーラム」のご利用、誠にありがとうございました。");
+        body.append("この度、会員の退会処理及び会員登録情報を削除致しましたので、ご連絡致します。\n" );
+        body.append("今後とも、当財団のホームページのご利用、よろしくお願い致します。\n\n");
+
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(message, true);
+            messageHelper.setTo(to);
+            messageHelper.setSubject(subject);
+            messageHelper.setBcc(cc);
+            messageHelper.setText(body.toString(), false);
+            Context context = new Context();
+            String htmlContent = templateEngine.process("member-delete", context );
+            messageHelper.setText(htmlContent, true);
+            mailSender.send(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "Mail Send";
+    }
 	public String sendUserSlotReservationEmail(ReservationDetails reservationDetails, ReservationRegion region,String time1, LocalDate date1) {       
         String subject ="【仮予約のご案内】無料カウンセリング相談"  ; 
         String to ="bijila@nivid.co";
