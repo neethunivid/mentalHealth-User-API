@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +33,7 @@ import com.mentalhealthapi.model.Member;
 import com.mentalhealthapi.model.Prefecture;
 import com.mentalhealthapi.service.MemberService;
 
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 
 
@@ -222,7 +224,7 @@ public class MemberController {
             return ResponseEntity.badRequest().body(response);
         }
     }
-    
+
     /**
      * Get all member details
      * @return
@@ -284,9 +286,9 @@ public class MemberController {
     /**
      * delete member
      */
-    
+
     @DeleteMapping("/member/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('USER') or hasAuthority('ADMIN')")
     public ResponseEntity<ApiResponse<Member>> deleteMember(@PathVariable("id") Integer memberId){
     	try {
     		 Member result= memberService.deleteMember(memberId);
@@ -335,5 +337,3 @@ public class MemberController {
 	    }
 	}
 }
-
-
