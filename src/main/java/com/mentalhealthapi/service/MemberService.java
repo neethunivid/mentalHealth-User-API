@@ -454,6 +454,7 @@ public class MemberService {
 		member.setEmail_mob(request.getEmail_mob());
 		member.setMailmagazine(request.getMailmagazine());
 		member.setRemarks_initial(request.getRemarks_initial());
+		member.setIcon(request.getIcon());
 		member.setNgMember(0);
 		member.setDeleteRequest(0);
 		member.setDate(request.getDate());
@@ -540,6 +541,7 @@ public class MemberService {
 		member.setEmail_mob(request.getEmail_mob());
 		member.setMailmagazine(request.getMailmagazine());
 		member.setRemarks_initial(request.getRemarks_initial());
+		member.setStatus(request.getStatus() != null ? request.getStatus() : 0);
 		if (request.getUser_type1() != null) {
 			member.setStatus(1);
 		}
@@ -565,8 +567,10 @@ public class MemberService {
 		MailMagazineDTO mailMagazineDTO = new MailMagazineDTO();
 		mailMagazineDTO.setEmailPc(request.getEmail_pc());
 		mailMagazineDTO.setEmailMob(request.getEmail_mob());
+		mailMagazineDTO.setEmail_smart(request.getEmail_smart());
 		mailMagazineDTO.setMailMagazine(request.getMailmagazine());
 		mailMagazineDTO.setId(mid);
+		mailMagazineDTO.setName(request.getName());
 		mailMagazineService.processMailMagazine(mailMagazineDTO);
 
 		// SAVING THE REMARKS TO REMARKS TABLE ...
