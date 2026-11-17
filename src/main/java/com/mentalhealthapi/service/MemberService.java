@@ -492,6 +492,23 @@ public class MemberService {
 		member.setRemarks_initial(rmk.getId());
 		memberRepository.save(member);
 
+		try {
+			Prefecture prefecture = prefectureRepository.findById(member.getPref())
+					.orElseThrow(() -> new IllegalStateException("Member prefecture not found"));
+			Job jobDetails = jobRepository.findById(Integer.parseInt(member.getJob()))
+					.orElseThrow(() -> new IllegalStateException("Member job not found"));
+			String recipientEmail = StringUtils.hasText(member.getEmail_pc())
+					? member.getEmail_pc()
+					: member.getEmail_mob();
+			if (!StringUtils.hasText(recipientEmail)) {
+				throw new IllegalStateException("Member email not found");
+			}
+			emailService.sendMemberEmail(recipientEmail, member.getName(), memberdata,
+					prefecture.getName(), jobDetails.getName());
+		} catch (MessagingException e) {
+			throw new IllegalStateException("Failed to send member registration email", e);
+		}
+
 		return memberdata;
 
 	}
@@ -980,10 +997,13 @@ public class MemberService {
 
 		try {
 			if (request.getStatus() == 1) {
-				emailService.sendMemberRegistrationMail(member.getEmail_pc(), member.getName(), room, member);
+				String recipientEmail = StringUtils.hasText(member.getEmail_pc())
+						? member.getEmail_pc()
+						: member.getEmail_mob();
+				emailService.sendMemberRegistrationMail(recipientEmail, member.getName(), room, member);
 			}
 		} catch (MessagingException e) {
-			e.printStackTrace();
+			//log.error("Failed to send member registration email", e);
 		}
 
 		return member;
@@ -1043,11 +1063,13 @@ public class MemberService {
 		System.out.println("<I am here >>>"+request.getStatus());
 		try {
 			if (request.getStatus() == 1) {
-				emailService.sendMemberRegistrationMail(member.getEmail_pc(), member.getName(), room, member);
+				String recipientEmail = StringUtils.hasText(member.getEmail_pc())
+						? member.getEmail_pc()
+						: member.getEmail_mob();
+				emailService.sendMemberRegistrationMail(recipientEmail, member.getName(), room, member);
 			}
 		} catch (MessagingException e) {
-			
-			e.printStackTrace();
+			//log.error("Failed to send member registration email", e);
 		}
 
 		return member;
