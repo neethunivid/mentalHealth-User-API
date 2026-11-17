@@ -81,9 +81,9 @@ public class EmailService {
          MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
          // Set recipient, subject, and email content
-         //helper.setTo(recipientEmail);
-         helper.setFrom("joseishinseikanri@mental-health.org");
-         helper.setTo("bijila@nivid.co");
+         helper.setTo(recipientEmail);
+        // helper.setFrom("joseishinseikanri@mental-health.org");
+         //helper.setTo("bijila@nivid.co");
          helper.setSubject("Member Registration Confirmation");
 
          // Prepare the context with data for the template
