@@ -293,12 +293,13 @@ public class TreeService {
 		    String type = request.getType();
 		    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id")); 			  
 		    Page<Object[]> resultPage = remarkRepository.findRemarkHierarchyTreeListByType(type, pageable);
-           
+
 		    if (resultPage.hasContent()) {
 		        return resultPage.getContent().stream()
 		            .map(row -> {
 		                int parentId = (int) row[0];
-		                int childCount = remarkRepository.findChildCount(type,parentId);
+		                String memberIcon = row[10] != null ? row[10].toString() : null; // null-safe
+		                int childCount = remarkRepository.findChildCount(type, parentId);
 
 		                return new TreeListDTO(
 		                    (int) row[0],       // id
@@ -310,7 +311,8 @@ public class TreeService {
 		                    row[6] != null ? ((Timestamp) row[6]).toLocalDateTime() : null,  // date
 		                    (int) row[7],       // memberId
 		                    (String) row[8],    // memberName
-		                    childCount          // count
+		                    childCount,         // count
+		                    memberIcon          // member icon (nullable)
 		                );
 		            })
 		            .collect(Collectors.toList());
@@ -384,7 +386,8 @@ public class TreeService {
                 (Integer) row[6], //member
                 (Integer) row[7], //remarks
                 (String) row[8],  // memberName
-                (Integer) row[9]  // memberSex
+                (Integer) row[9],  // memberSex
+			 	(String) row[10]
             );
             childRemarks.add(remark);
             fetchChildRemarks(remark.getId(), childRemarks);

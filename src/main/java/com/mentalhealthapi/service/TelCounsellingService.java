@@ -944,6 +944,25 @@ public class TelCounsellingService {
             }
         }
     }
+    public ResponseEntity<ApiResponse<Object>> getNextTelCounsellingId() {
+        try {
+            Integer nextId = telCounsellingRepository.getNextId();
 
+            Map<String, Integer> responseData = new HashMap<>();
+            responseData.put("nextId", nextId);
+
+            ApiResponse<Object> response =
+                    new ApiResponse<>(1, null, responseData);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            ApiResponse<Object> response =
+                    new ApiResponse<>(0, "Failed to fetch next ID", null);
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }
+    }
 
 }

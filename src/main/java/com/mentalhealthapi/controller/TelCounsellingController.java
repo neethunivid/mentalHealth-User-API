@@ -81,7 +81,24 @@ public class TelCounsellingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+    /**
+     * Controller for getting the next TelCounselling ID.
+     *
+     * @return ResponseEntity with ApiResponse indicating success or failure.
+     */
+    @GetMapping("/next-id")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ApiResponse<Object>> getNextTelCounsellingId() {
+        try {
+            return telCounsellingService.getNextTelCounsellingId();
+        } catch (Exception e) {
+            ApiResponse<Object> response =
+                    new ApiResponse<>(0, "Failed to fetch next ID", null);
 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }
+    }
     /**
      * Controller for getting list of TelCounselling Route information.
      * @return ResponseEntity with ApiResponse indicating success or failure.

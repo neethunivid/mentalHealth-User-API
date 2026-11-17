@@ -466,7 +466,7 @@ public class MemberService {
 		member.setMemberno(mid);
 		member.setId(mid);
 		memberRepository.save(member);
-
+		System.out.print("MEMBER saved >>");
 		// save to mailmagazine if selected
 		MailMagazineDTO mailMagazineDTO = new MailMagazineDTO();
 		mailMagazineDTO.setEmailPc(member.getEmail_pc());
@@ -479,8 +479,8 @@ public class MemberService {
 		// SAVING THE REMARKS TO REMARKS TABLE ...
 		RemarksInitial remarksInitial = new RemarksInitial();
 		remarksInitial.setMember(mid);
-		remarksInitial.setTitle(request.getStatement_title());
-		remarksInitial.setText(request.getStatement_text());
+		remarksInitial.setTitle(request.getStatement_title() != null ? request.getStatement_title() : "");
+		remarksInitial.setText(request.getStatement_text() != null ? request.getStatement_text() : "");
 		remarksInitial.setNormal((byte) 0);
 		remarksInitial.setAnxiety((byte) 0);
 		remarksInitial.setBlackmail((byte) 0);
@@ -576,8 +576,8 @@ public class MemberService {
 		// SAVING THE REMARKS TO REMARKS TABLE ...
 		RemarksInitial remarksInitial = new RemarksInitial();
 		remarksInitial.setMember(mid);
-		remarksInitial.setTitle(request.getStatement_title());
-		remarksInitial.setText(request.getStatement_text());
+		remarksInitial.setTitle(request.getStatement_title() != null ? request.getStatement_title() : "");
+		remarksInitial.setText(request.getStatement_text() != null ? request.getStatement_text() : "");
 		remarksInitial.setNormal(request.getNormal());
 		remarksInitial.setAnxiety(request.getAnxiety());
 		remarksInitial.setBlackmail(request.getBlackmail());

@@ -15,8 +15,8 @@ public class RemarkResponseDTO {
 	    private Integer remarks;
 	    private String memberName;
 	    private Integer memberSex;
-
-	    public RemarkResponseDTO(Integer id, String remarkNo, String title, String text, LocalDateTime date, Integer status,Integer member,Integer remarks, String memberName, Integer memberSex) {
+	 	private String memberIcon;
+	    public RemarkResponseDTO(Integer id, String remarkNo, String title, String text, LocalDateTime date, Integer status,Integer member,Integer remarks, String memberName, Integer memberSex,String memberIcon) {
 	        this.id = id;
 	        this.remarkNo = remarkNo;
 	        this.title = title;
@@ -27,6 +27,7 @@ public class RemarkResponseDTO {
 	        this.remarks=remarks;
 	        this.memberName = memberName;
 	        this.memberSex = memberSex;
+			this.memberIcon=memberIcon;
 	    }
     
     public Integer getId() {
@@ -107,6 +108,14 @@ public class RemarkResponseDTO {
 
 	public void setRemarks(Integer remarks) {
 		this.remarks = remarks;
+	}
+
+	public String getMemberIcon() {
+		return memberIcon;
+	}
+
+	public void setMemberIcon(String memberIcon) {
+		this.memberIcon = memberIcon;
 	}
 
 }

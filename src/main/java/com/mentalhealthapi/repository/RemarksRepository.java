@@ -148,7 +148,7 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
         	List<Object[]> findRemarkHierarchyTreeByType(@Param("type") String type);
 
         	@Query(value = "SELECT r.id, r.remark_no, r.remarks AS parent_remark_id, r.title, r.text, r.remarks, r.date, r.member, m.name, " +
-                    "r.remarks AS count " +
+                    "r.remarks AS count ,m.icon " +
                     "FROM remarks r " +
                     "JOIN member m ON r.member = m.memberno " +
                     "WHERE CASE WHEN :type = 'normal' THEN r.normal = 1 " +
@@ -258,7 +258,7 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
          
        //  List<RemarkResponseDTO> findByRemarksAndStatus(Integer integer, String status);
          
-         @Query("SELECT r.id, r.remarkNo, r.title, r.text, r.date, r.status,r.member,r.remarks, m.name, m.sex " +
+         @Query("SELECT r.id, r.remarkNo, r.title, r.text, r.date, r.status,r.member,r.remarks, m.name, m.sex ,m.icon " +
         	       "FROM Remarks r JOIN Member m ON r.member = m.id " +
         	       "WHERE r.remarks = :remarks AND r.status = :status")
         	List<Object[]> findByRemarksAndStatus(@Param("remarks") Integer remarks, @Param("status") String status);

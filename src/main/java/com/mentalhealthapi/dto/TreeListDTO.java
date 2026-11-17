@@ -13,9 +13,10 @@ public class TreeListDTO {
 	 private LocalDateTime date;
 	 private int memberid;
 	 private String memberName;
+	 private String memberIcon;
 	 private int count;
 	 
-	 public TreeListDTO(int id, String remarkNo, int ParentId, String title, String text, int remarks, LocalDateTime date,int memberid,String memberName,int count) {
+	 public TreeListDTO(int id, String remarkNo, int ParentId, String title, String text, int remarks, LocalDateTime date,int memberid,String memberName,int count,String memberIcon) {
 		 super();
 		this.id = id; 
 		this.remarkNo=remarkNo;
@@ -26,6 +27,7 @@ public class TreeListDTO {
 		this.date=date;
 		this.memberid=memberid;
 		this.memberName=memberName;
+		this.memberIcon=memberIcon;
 		this.count=count;
 		    
 		}
@@ -94,5 +96,10 @@ public class TreeListDTO {
 	public void setCount(int count) {
 		this.count = count;
 	}
-
+	public String getMemberIcon() {
+		return memberIcon;
+	}
+	public void setMemberIcon(String icon) {
+		this.memberIcon = memberIcon;
+	}
 }

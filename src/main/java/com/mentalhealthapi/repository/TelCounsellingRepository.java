@@ -90,4 +90,8 @@ public interface TelCounsellingRepository extends JpaRepository<TelConselling,In
 
 	@Query("SELECT t FROM TelConselling t WHERE t.status = 1")
 	Page<TelConselling> findAllActive(PageRequest pageRequest);
+
+
+	@Query("SELECT COALESCE(MAX(t.id), 0) + 1 FROM TelConselling t")
+	Integer getNextId();
 }
