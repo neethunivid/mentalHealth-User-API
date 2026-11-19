@@ -308,7 +308,7 @@ public class MemberRequest {
 	}
 	public String getMessage() { return message; }
 	public void setMessage(String message) { this.message = message; }
-	public String getSettlementTitle() { return statement_title; }
+	public String getStatementTitle() { return statement_title; }
 	public void setStatementTitle(String statement_title) { this.statement_title = statement_title; }
 	public Integer getMailmagazine() {
 		return mailmagazine;
