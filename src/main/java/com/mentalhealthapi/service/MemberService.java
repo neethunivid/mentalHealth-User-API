@@ -455,6 +455,8 @@ public class MemberService {
 		member.setMailmagazine(request.getMailmagazine());
 		member.setRemarks_initial(request.getRemarks_initial());
 		member.setIcon(request.getIcon());
+		member.setMessage(request.getMessage());
+		member.setSpeech_title(request.getStatement_title());
 		member.setNgMember(0);
 		member.setDeleteRequest(0);
 		member.setDate(request.getDate());

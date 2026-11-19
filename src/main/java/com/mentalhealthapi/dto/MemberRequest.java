@@ -17,7 +17,7 @@ public class MemberRequest {
     private String memberid;   
     private String password;   
     private Integer sex;    
-    
+    private String message;
     private LocalDate dob;
     private String job;   
     private String job_additional;       
@@ -306,6 +306,10 @@ public class MemberRequest {
 	public void setEmail_mob(String email_mob) {
 		this.email_mob = email_mob;
 	}
+	public String getMessage() { return message; }
+	public void setMessage(String message) { this.message = message; }
+	public String getSettlementTitle() { return statement_title; }
+	public void setStatementTitle(String statement_title) { this.statement_title = statement_title; }
 	public Integer getMailmagazine() {
 		return mailmagazine;
 	}
