@@ -482,7 +482,7 @@ public class MemberService {
 		RemarksInitial remarksInitial = new RemarksInitial();
 		remarksInitial.setMember(mid);
 		remarksInitial.setTitle(request.getStatement_title() != null ? request.getStatement_title() : "");
-		remarksInitial.setText(request.getStatement_text() != null ? request.getStatement_text() : "");
+		remarksInitial.setText(request.getMessage() != null ? request.getMessage() : "");
 		remarksInitial.setNormal((byte) 0);
 		remarksInitial.setAnxiety((byte) 0);
 		remarksInitial.setBlackmail((byte) 0);
