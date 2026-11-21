@@ -52,7 +52,7 @@ public class EmailService {
         context.setVariable("namek", member.getNamek());
         context.setVariable("namek2", member.getName2());
         context.setVariable("memberid", member.getMemberid());
-        context.setVariable("password", member.getPassword());
+        context.setVariable("password", maskString(member.getPassword()));
         context.setVariable("sex", member.getSex()==2?"女性":"男");
         context.setVariable("dob", member.getDob());
         context.setVariable("job", job);
@@ -104,9 +104,9 @@ public class EmailService {
     
     private static String maskString(String input) {
         if (input != null && !input.isEmpty()) {
-            int maskLength = Math.max(input.length() - 2, 0);
+            int maskLength = Math.max(input.length(), 0);
             String mask = "*".repeat(maskLength);
-            return input.substring(0, 2) + mask;
+            return mask;
         }
         return input;
     }
