@@ -68,6 +68,9 @@ public class Remarks {
 	
 	@Column(name="org_created_date")
 	private LocalDateTime orgCreatedDate;
+
+	@Column(columnDefinition = "tinyint default 0")
+	private byte diary = 0;
 	
 	
 	
@@ -200,6 +203,14 @@ public class Remarks {
 
 	public void setOrgCreatedDate(LocalDateTime orgCreatedDate) {
 		this.orgCreatedDate = orgCreatedDate;
+	}
+
+	public byte getDiary() {
+		return diary;
+	}
+
+	public void setDiary(byte diary) {
+		this.diary = diary;
 	}
 
 	public LocalDateTime getDate() {

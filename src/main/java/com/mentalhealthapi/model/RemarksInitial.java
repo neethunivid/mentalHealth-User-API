@@ -55,6 +55,9 @@ public class RemarksInitial {
 	 private LocalDateTime date;
 	
 	 private int status;
+	 
+	 @Column(columnDefinition = "tinyint default 0")
+	 private byte diary = 0;
 
 	
 	
@@ -179,6 +182,14 @@ public class RemarksInitial {
 
 	public void setDate(LocalDateTime date) {
 		this.date = date;
+	}
+
+	public byte getDiary() {
+		return diary;
+	}
+
+	public void setDiary(byte diary) {
+		this.diary = diary;
 	}
 	 
 	 	 

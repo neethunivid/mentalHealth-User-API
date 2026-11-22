@@ -602,8 +602,10 @@ public class MemberService {
 		remarksInitial.setBlackmail(request.getBlackmail());
 		remarksInitial.setGrowingup(request.getGrowingup());
 		remarksInitial.setOther(request.getOther());
+		remarksInitial.setDiary((byte) 0);
 		if (request.isChk_add1() && request.getAddition1() != null) {
 			remarksInitial.setAddition1(request.getAddition1());
+			remarksInitial.setDiary((byte) 1);
 		}
 		if (request.isChk_add2() && request.getAddition2() != null) {
 			remarksInitial.setAddition2(request.getAddition2());
@@ -626,6 +628,7 @@ public class MemberService {
 			remarks.setBlackmail(rmk.getBlackmail());
 			remarks.setOther(rmk.getOther());
 			remarks.setGrowingup(rmk.getGrowingup());
+			remarks.setDiary(rmk.getDiary());
 			remarks.setAddition1(rmk.getAddition1());
 			remarks.setAddition2(rmk.getAddition2());
 			remarks.setTitle(rmk.getTitle());
@@ -891,6 +894,7 @@ public class MemberService {
 
 		if (request.isChk_add1() && request.getAddition1() != null) {
 			rmkIni.setAddition1(request.getAddition1());
+			rmkIni.setDiary((byte) 1);
 		}
 		if (request.isChk_add2() && request.getAddition2() != null) {
 			rmkIni.setAddition2(request.getAddition2());
@@ -1058,11 +1062,11 @@ public class MemberService {
 		} else if (request.getGrowingup() != 0) {
 			room = "成長の部屋";
 		} else if (request.getAddition1() != null) {
-			room = "新規1";
+			room = "日記";
 		} else if (request.getAddition2() != null) {
 			room = "新規２";
 		}
-		System.out.println("<I am here >>>"+request.getStatus());
+
 		try {
 			if (request.getStatus() == 1) {
 				String recipientEmail = StringUtils.hasText(member.getEmail_pc())
@@ -1161,12 +1165,14 @@ public class MemberService {
 		rmkIni.setBlackmail(request.getBlackmail());
 		rmkIni.setGrowingup(request.getGrowingup());
 		rmkIni.setOther(request.getOther());
+		rmkIni.setDiary(request.getDiary());
 		rmkIni.setAddition1(request.getAddition1());
 		rmkIni.setAddition2(request.getAddition2());
 		rmkIni.setRemarkNo("");
 
 		if (request.isChk_add1() && request.getAddition1() != null) {
 			rmkIni.setAddition1(request.getAddition1());
+			rmkIni.setDiary((byte) 1);
 		}
 		if (request.isChk_add2() && request.getAddition2() != null) {
 			rmkIni.setAddition2(request.getAddition2());
@@ -1197,6 +1203,7 @@ public class MemberService {
 			remarks.setBlackmail(rmkIni.getBlackmail());
 			remarks.setOther(rmkIni.getOther());
 			remarks.setGrowingup(rmkIni.getGrowingup());
+			remarks.setDiary(rmkIni.getDiary());
 			remarks.setAddition1(rmkIni.getAddition1());
 			remarks.setAddition2(rmkIni.getAddition2());
 			remarks.setTitle(rmkIni.getTitle());

@@ -72,6 +72,7 @@ public class MemberRequest {
     private String remarkNo;	
 	 private String statement_title;
 	 private String statement_text;
+	 private byte diary;
 	 private boolean chk_add1;
 	 private boolean chk_add2;
 	 public String getStatement_title() {
@@ -129,6 +130,13 @@ public class MemberRequest {
 	public byte getOther() {
 		return other;
 	}
+	public byte getDiary() {
+		return diary;
+	}
+	public void setDiary(byte diary) {
+		this.diary = diary;
+	}
+
 	public void setOther(byte other) {
 		this.other = other;
 	}

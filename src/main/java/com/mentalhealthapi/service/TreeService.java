@@ -75,7 +75,7 @@ public class TreeService {
 
 		    boolean isApproved = false;
 		    int approvedStatus=0;
-
+			System.out.println("heelllo "+request.getMemberId());
 		    // Check if the member is blocked or not
 		    if (!isBlockedMember(request.getMemberId())) {
 		        // Check if auto-approval is turned ON
@@ -113,6 +113,9 @@ public class TreeService {
 		            break;		       
 		        case 5:
 		            newRemark.setGrowingup((byte) 1);
+		            break;
+		        case 6:
+		            newRemark.setDiary((byte) 1);
 		            break;
 		    }
 
@@ -249,7 +252,7 @@ public class TreeService {
 	 public boolean isBlockedMember(int memberId) {
 	        // Assuming your Member entity has a property named "ngMember"
 	        Member member = memberRepository.findById(memberId).orElse(null);
-
+				System.out.println("MEMBER "+member.getNgMember());
 	        if (member != null && member.getNgMember() ==1) {
 	            return true;
 	        } else {
@@ -344,6 +347,9 @@ public class TreeService {
          case 5:
              remarks.setGrowingup((byte) 1);
              break;
+		 case 6:
+			 remarks.setDiary((byte) 1);
+			 break;
          default:
              // Handle invalid type
              break;

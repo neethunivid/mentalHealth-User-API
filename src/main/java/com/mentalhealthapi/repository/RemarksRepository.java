@@ -34,19 +34,19 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
     @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0 AND r.blackmail=1 AND r.blackmail <> '' AND m.id=r.member")
     int countBlackmailByStatus();
     
-    @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0  AND r.other=1 AND r.other <> '' AND m.id=r.member")
+    @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0  AND r.other=1 AND r.other <> '' AND m.id=r.member ")
     int countOtherByStatus();
     
-    @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0 AND r.growingup=1 AND r.growingup <> '' AND m.id=r.member ")
+    @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0 AND r.growingup=1 AND r.growingup <> '' AND m.id=r.member")
     int countGrowingupByStatus();
     
-    @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0 AND r.addition1 <> '' AND m.id=r.member")
+    @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0 AND r.diary=1 AND m.id=r.member")
     int countAddition1ByStatus();
     
     @Query("SELECT COUNT(r.id) FROM Remarks r,Member m WHERE r.status = 0 AND r.addition2 <> '' AND m.id=r.member")
     int countAddition2ByStatus();
-    
- 
+
+
     @Query(value = "SELECT r.id, r.remark_no, m.name, m.email_pc, r.title, r.text, r.remarks, r.date,m.memberid " +
             "FROM remarks r " +
             "JOIN member m ON r.member = m.memberno " +
@@ -55,13 +55,14 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
             "           WHEN :type = 'blackmail' THEN r.blackmail = 1 " +
             "           WHEN :type = 'other' THEN r.other = 1 " +
             "           WHEN :type = 'growingup' THEN r.growingup = 1 " +
+            "           WHEN :type = 'diary' THEN r.diary = 1 " +
             "           WHEN :type = 'addition1' THEN r.addition1!='' " +
             "           WHEN :type = 'addition2' THEN r.addition2!='' " +
             "           ELSE FALSE " +
             "      END " +
             "AND r.status = '0' " +
             "ORDER BY r.id ASC", nativeQuery = true)
-    List<Object[]> findTypeRemarks(@Param("type") String type);   
+    List<Object[]> findTypeRemarks(@Param("type") String type);
    
     
     @Query(value = "SELECT r.remark_no,r.date,m.name,m.memberid, m.email_pc, r.title, r.text " +
@@ -72,7 +73,7 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
             "           WHEN :type = 'blackmail' THEN r.blackmail = 1 " +
             "           WHEN :type = 'other' THEN r.other = 1 " +
             "           WHEN :type = 'growingup' THEN r.growingup = 1 " +
-            "           WHEN :type = 'addition1' THEN r.addition1 !='' " +
+            "           WHEN :type = 'diary' THEN r.addition1 !='' and r.diary=1 " +
             "           WHEN :type = 'addition2' THEN r.addition2 !='' " +
             "           ELSE FALSE " +
             "      END " +
@@ -140,7 +141,8 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
                      "           WHEN :type = 'anxiety' THEN r.anxiety = 1 " +
                      "           WHEN :type = 'blackmail' THEN r.blackmail = 1 " +
                      "           WHEN :type = 'other' THEN r.other = 1 " +
-                     "           WHEN :type = 'growingup' THEN r.growingup = 1 " +                     
+                     "           WHEN :type = 'growingup' THEN r.growingup = 1 " +
+                     "           WHEN :type = 'diary' THEN r.diary = 1 " +
                      "           ELSE FALSE " +
                      "      END " +
                      "AND r.status = '1' " +
@@ -156,6 +158,7 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
                     "           WHEN :type = 'blackmail' THEN r.blackmail = 1 " +
                     "           WHEN :type = 'other' THEN r.other = 1 " +
                     "           WHEN :type = 'growingup' THEN r.growingup = 1 " +
+                    "           WHEN :type = 'diary' THEN r.diary = 1 " +
                     "           WHEN :type = 'addition1' THEN r.addition1 != '' " +
                     "           WHEN :type = 'addition2' THEN r.addition2 != '' " +
                     "           ELSE FALSE " +
@@ -173,6 +176,7 @@ public interface RemarksRepository extends JpaRepository<Remarks, Integer> {
              "           WHEN :type = 'blackmail' THEN r.blackmail = 1 " +
              "           WHEN :type = 'other' THEN r.other = 1 " +
              "           WHEN :type = 'growingup' THEN r.growingup = 1 " +
+             "           WHEN :type = 'diary' THEN r.diary = 1 " +
              "           WHEN :type = 'addition1' THEN r.addition1 != '' " +
              "           WHEN :type = 'addition2' THEN r.addition2 != '' " +
              "           ELSE FALSE " +

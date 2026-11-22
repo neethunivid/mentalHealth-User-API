@@ -59,7 +59,7 @@ public class MemberManagementService {
         fieldCounts.put("blackmail", remarksRepository.countBlackmailByStatus());
         fieldCounts.put("other", remarksRepository.countOtherByStatus());
         fieldCounts.put("growingup", remarksRepository.countGrowingupByStatus());
-        fieldCounts.put("addition1", remarksRepository.countAddition1ByStatus());
+        fieldCounts.put("diary", remarksRepository.countAddition1ByStatus());
         fieldCounts.put("addition2", remarksRepository.countAddition2ByStatus());
 
         return fieldCounts;
