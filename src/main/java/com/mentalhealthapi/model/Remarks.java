@@ -47,6 +47,9 @@ public class Remarks {
 
 	@Column(columnDefinition = "tinyint")
     private byte growingup;
+
+	@Column(columnDefinition = "tinyint")
+	private byte diary;
 	
 	@Column(columnDefinition = "VARCHAR(255)")
 	 private String addition1;
