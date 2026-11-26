@@ -1,4 +1,5 @@
 package com.mentalhealthapi.service;
+
 import org.springframework.data.domain.Sort;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -38,367 +39,370 @@ import org.slf4j.LoggerFactory;
 
 @Service
 public class TreeService {
-	 private final MemberRepository memberRepository;
-	 private final ConfigRepository configRepository;
-	 private final RemarksRepository remarkRepository;
-	 private final NgWordsRepository ngWordRepository;
-	 
-	 @Autowired
-	 public TreeService(MemberRepository memberRepository,ConfigRepository configRepository,
-			 RemarksRepository remarkRepository,NgWordsRepository ngWordRepository) {
-		 this.memberRepository = memberRepository;
-		 this.configRepository = configRepository;
-		 this.remarkRepository = remarkRepository;
-		 this.ngWordRepository = ngWordRepository;
-	 }
-	 
-	 public Remarks saveReply(RemarkDTO request) {
-		 List<Integer> ar = null; 
-		    String title = generateTitle(request.getRemarkId(),ar);
-		    Remarks rmks = remarkRepository.findById(request.getRemarkId()).orElse(null);
-		    int type= findNodType(request.getRemarkId());
-		    int cnt = replyCount(request.getRemarkId())+1;
-		   
-		    String rmk_title = "re:" + cnt + " " + rmks.getTitle();
-		    String cleanedText = request.getText();
-	        String cleanedRmkTitle ="";
-		    String rmkTitle = (request.getTitle() != null && !request.getTitle().isEmpty()) ? request.getTitle() : request.getRemarkTitle();
+	private final MemberRepository memberRepository;
+	private final ConfigRepository configRepository;
+	private final RemarksRepository remarkRepository;
+	private final NgWordsRepository ngWordRepository;
 
-		    if (remarksAutoApproval() && !isBlockedMember(request.getMemberId())) {
-		         cleanedText = xssClean(request.getText());
-		         cleanedRmkTitle = xssClean(rmkTitle);
-		    } else {
-		        // No cleaning needed if auto-approval is off or member is blocked
-		         cleanedText = request.getText();
-		         cleanedRmkTitle = rmkTitle;
-		    }
+	@Autowired
+	public TreeService(MemberRepository memberRepository, ConfigRepository configRepository,
+			RemarksRepository remarkRepository, NgWordsRepository ngWordRepository) {
+		this.memberRepository = memberRepository;
+		this.configRepository = configRepository;
+		this.remarkRepository = remarkRepository;
+		this.ngWordRepository = ngWordRepository;
+	}
 
-		    boolean isApproved = false;
-		    int approvedStatus=0;
-			System.out.println("heelllo "+request.getMemberId());
-		    // Check if the member is blocked or not
-		    if (!isBlockedMember(request.getMemberId())) {
-		        // Check if auto-approval is turned ON
-		        if (remarksAutoApproval()) {
-		            // Auto-approving status
-		            isApproved = isNGWordsChecking(cleanedText) && isNGWordsChecking(cleanedRmkTitle);
-		            if(isApproved) {approvedStatus=1;}
-		        }
-		    }
+	public Remarks saveReply(RemarkDTO request) {
+		List<Integer> ar = null;
+		String title = generateTitle(request.getRemarkId(), ar);
+		Remarks rmks = remarkRepository.findById(request.getRemarkId()).orElse(null);
+		int type = findNodType(request.getRemarkId());
+		int cnt = replyCount(request.getRemarkId()) + 1;
 
-		    // Initialize and save the new remark
-		    Remarks newRemark = new Remarks();
-		    newRemark.setMember(request.getMemberId());
-		    newRemark.setTitle(cleanedRmkTitle);
-		    newRemark.setText(cleanedText);
-		    newRemark.setDate(LocalDateTime.now());
-		    newRemark.setOrgCreatedDate(LocalDateTime.now());
-		    newRemark.setRemarks(request.getParentRemark());
-		    newRemark.setStatus(approvedStatus);
-		    newRemark.setRemarkNo("RMK");
+		String rmk_title = "re:" + cnt + " " + rmks.getTitle();
+		String rmkTitle = (request.getTitle() != null && !request.getTitle().isEmpty()) ? request.getTitle()
+				: request.getRemarkTitle();
 
-		    // Set the appropriate type flags based on 'type'
-		    switch (request.getType()) {
-		        case 1:
-		        	newRemark.setNormal((byte) 1);
-		            break;
-		        case 2:
-		            newRemark.setAnxiety((byte) 1);
-		            break;
-		        case 3:
-		            newRemark.setBlackmail((byte) 1);
-		            break;
-		        case 4:
-		            newRemark.setOther((byte) 1);
-		            break;		       
-		        case 5:
-		            newRemark.setGrowingup((byte) 1);
-		            break;
-		        case 6:
-		            newRemark.setDiary((byte) 1);
-		            break;
-		    }
-
-		    remarkRepository.save(newRemark);
-
-		    // Generate and set remark number
-		    String remarkNo = generateRMKNo(newRemark.getId());
-		    newRemark.setRemarkNo(remarkNo);
-		    remarkRepository.save(newRemark);		  
-		    return newRemark;
+		// --- Block NG members: not allowed to reply at all ---
+		if (isBlockedMember(request.getMemberId())) {
+			throw new IllegalArgumentException("ブロックされたメンバーは返信を投稿できません。");
 		}
 
-	
-	 
-	 public int replyCount(int remarkId) {
-	        
-	        int status = 1;	        
-	        // Use the repository method to count replies for the given remark ID
-	        int count = remarkRepository.countByRemarksAndStatus(remarkId, status);
-	        // Convert the long count to int and return it
-	        return count;
-	    }
+		// --- NG Word check: block before saving for all remaining members ---
+		if (!isNGWordsChecking(request.getText())) {
+			throw new IllegalArgumentException("Reply contains prohibited NG words and cannot be submitted.");
+		}
+		if (rmkTitle != null && !isNGWordsChecking(rmkTitle)) {
+			throw new IllegalArgumentException("Reply title contains prohibited NG words and cannot be submitted.");
+		}
 
-		 public int findNodType(int nodId) {
-		        Remarks remark = remarkRepository.findById(nodId).orElse(null);
+		String cleanedText;
+		String cleanedRmkTitle;
+		int approvedStatus = 0; // default: pending approval
 
-		        if (remark != null) {
-		            if (remark.getNormal() == 1) {
-		                return 1;
-		            } else if (remark.getAnxiety() == 1) {
-		                return 2;
-		            } else if (remark.getBlackmail() == 1) {
-		                return 3;
-		            } else if (remark.getOther() == 1) {
-		                return 4;
-		            } else if (remark.getGrowingup() == 1) {
-		                return 5;
-		            }
-		        }
+		if (remarksAutoApproval()) {
+			// Auto-approval ON: XSS clean and auto-approve
+			System.out.println("Autoapproval " + request.getMemberId());
+			cleanedText = xssClean(request.getText());
+			cleanedRmkTitle = xssClean(rmkTitle != null ? rmkTitle : "");
+			approvedStatus = 1;
+		} else {
+			// Auto-approval OFF: save as pending
+			cleanedText = request.getText();
+			cleanedRmkTitle = rmkTitle != null ? rmkTitle : "";
+		}
 
-		        // Return a default value or handle the case when no type is found
-		        return 0; 
-		    }
-//
-//		private String generateTitle(int remarkId) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+		// Initialize and save the new remark
+		Remarks newRemark = new Remarks();
+		newRemark.setMember(request.getMemberId());
+		newRemark.setTitle(cleanedRmkTitle);
+		newRemark.setText(cleanedText);
+		newRemark.setDate(LocalDateTime.now());
+		newRemark.setOrgCreatedDate(LocalDateTime.now());
+		newRemark.setRemarks(request.getParentRemark());
+		newRemark.setStatus(approvedStatus);
+		newRemark.setRemarkNo("RMK");
 
-		private String generateTitle(int id, List<Integer> ar) {
-			if (ar == null) {
-		        ar = new ArrayList<>();
-		    }
-		        Optional<Remarks> optionalRemarks = remarkRepository.findById(id);
-		        if (optionalRemarks.isPresent()) {
-		            Remarks remarks = optionalRemarks.get();
-		            ar.add(getPosition(remarks.getId(), remarks.getRemarks())); 
+		// Set the appropriate type flags based on 'type'
+		switch (request.getType()) {
+			case 1:
+				newRemark.setNormal((byte) 1);
+				break;
+			case 2:
+				newRemark.setAnxiety((byte) 1);
+				break;
+			case 3:
+				newRemark.setBlackmail((byte) 1);
+				break;
+			case 4:
+				newRemark.setOther((byte) 1);
+				break;
+			case 5:
+				newRemark.setGrowingup((byte) 1);
+				break;
+			case 6:
+				newRemark.setDiary((byte) 1);
+				break;
+		}
 
-		            if (remarks.getRemarks() != null && remarks.getRemarks() > 0) {
-		                return generateTitle(remarks.getRemarks(), ar);
-		            } else {
-		                Collections.reverse(ar);
-		                int cnt = ar.size();
-		                ar.set(cnt - 1, ar.get(cnt - 1) + 1);
-		                String title = ar.stream().map(Object::toString).collect(Collectors.joining("-"));
-		                return "Re" + title + " " + remarks.getTitle();
-		            }
-		        } else {
-		            return ""; 
-		        }
-		    }
-		 
-		 public int getPosition(int id, int parentId) {		       
+		remarkRepository.save(newRemark);
 
-		        List<Integer> remarkIds = remarkRepository.findIdsByRemarksOrderByid(parentId);
-		        int position = 1;
+		// Generate and set remark number
+		String remarkNo = generateRMKNo(newRemark.getId());
+		newRemark.setRemarkNo(remarkNo);
+		remarkRepository.save(newRemark);
+		return newRemark;
+	}
 
-		        for (Integer remarkId : remarkIds) {
-		            if (remarkId.equals(id)) {
-		                break;
-		            }
-		            position++;
-		        }
+	public int replyCount(int remarkId) {
 
-		        return position;
-		    }
+		int status = 1;
+		// Use the repository method to count replies for the given remark ID
+		int count = remarkRepository.countByRemarksAndStatus(remarkId, status);
+		// Convert the long count to int and return it
+		return count;
+	}
+
+	public int findNodType(int nodId) {
+		Remarks remark = remarkRepository.findById(nodId).orElse(null);
+
+		if (remark != null) {
+			if (remark.getNormal() == 1) {
+				return 1;
+			} else if (remark.getAnxiety() == 1) {
+				return 2;
+			} else if (remark.getBlackmail() == 1) {
+				return 3;
+			} else if (remark.getOther() == 1) {
+				return 4;
+			} else if (remark.getGrowingup() == 1) {
+				return 5;
+			}
+		}
+
+		// Return a default value or handle the case when no type is found
+		return 0;
+	}
+	//
+	// private String generateTitle(int remarkId) {
+	// // TODO Auto-generated method stub
+	// return null;
+	// }
+
+	private String generateTitle(int id, List<Integer> ar) {
+		if (ar == null) {
+			ar = new ArrayList<>();
+		}
+		Optional<Remarks> optionalRemarks = remarkRepository.findById(id);
+		if (optionalRemarks.isPresent()) {
+			Remarks remarks = optionalRemarks.get();
+			ar.add(getPosition(remarks.getId(), remarks.getRemarks()));
+
+			if (remarks.getRemarks() != null && remarks.getRemarks() > 0) {
+				return generateTitle(remarks.getRemarks(), ar);
+			} else {
+				Collections.reverse(ar);
+				int cnt = ar.size();
+				ar.set(cnt - 1, ar.get(cnt - 1) + 1);
+				String title = ar.stream().map(Object::toString).collect(Collectors.joining("-"));
+				return "Re" + title + " " + remarks.getTitle();
+			}
+		} else {
+			return "";
+		}
+	}
+
+	public int getPosition(int id, int parentId) {
+
+		List<Integer> remarkIds = remarkRepository.findIdsByRemarksOrderByid(parentId);
+		int position = 1;
+
+		for (Integer remarkId : remarkIds) {
+			if (remarkId.equals(id)) {
+				break;
+			}
+			position++;
+		}
+
+		return position;
+	}
 
 	public String xssClean(String input) {
-		    // Remove invisible characters
-		    input = input.trim();
+		// Remove invisible characters
+		input = input.trim();
 
-		    // URL decode
-		    input = URLDecoder.decode(input, StandardCharsets.UTF_8);
+		// URL decode
+		input = URLDecoder.decode(input, StandardCharsets.UTF_8);
 
-		    // Use Jsoup to sanitize HTML
-		    Safelist safelist = Safelist.relaxed(); 
-		    Document document = Jsoup.parseBodyFragment(input);
-		    document.outputSettings().prettyPrint(false); // Prevent pretty-printing
-		    String cleanHtml = Jsoup.clean(document.body().html(), safelist);
+		// Use Jsoup to sanitize HTML
+		Safelist safelist = Safelist.relaxed();
+		Document document = Jsoup.parseBodyFragment(input);
+		document.outputSettings().prettyPrint(false); // Prevent pretty-printing
+		String cleanHtml = Jsoup.clean(document.body().html(), safelist);
 
-		    return cleanHtml;
+		return cleanHtml;
+	}
+
+	private boolean isNGWordsChecking(String input) {
+		input = input.trim();
+		if (input.isEmpty()) {
+			return true;
 		}
 
-	
-
-		private boolean isNGWordsChecking(String input) {
-			 input = input.trim();
-		        if (input.isEmpty()) {
-		            return true;
-		        }
-
-		        String[] keywords = input.split(" ");
-		        for (String keyword : keywords) {
-		            if (!keyword.isEmpty()) {
-		                long ngWordCount = ngWordRepository.countByTextContaining(keyword);
-		                if (ngWordCount > 0) {
-		                    return false; // NG word found, not approved
-		                }
-		            }
-		        }
-
-		        return true; // No NG words found, approved
+		String[] keywords = input.split(" ");
+		for (String keyword : keywords) {
+			if (!keyword.isEmpty()) {
+				long ngWordCount = ngWordRepository.countByTextContaining(keyword);
+				if (ngWordCount > 0) {
+					return false; // NG word found, not approved
+				}
+			}
 		}
 
-		
+		return true; // No NG words found, approved
+	}
 
-		private String generateRMKNo(long remarkId) {
-		    return "RMK" + remarkId;
-		    
+	private String generateRMKNo(long remarkId) {
+		return "RMK" + remarkId;
+
+	}
+
+	public boolean isBlockedMember(int memberId) {
+		// Assuming your Member entity has a property named "ngMember"
+		Member member = memberRepository.findById(memberId).orElse(null);
+		System.out.println("MEMBER " + member.getNgMember());
+		if (member != null && member.getNgMember() == 1) {
+			return true;
+		} else {
+			return false;
 		}
+	}
 
-		
- 
-	 public boolean isBlockedMember(int memberId) {
-	        // Assuming your Member entity has a property named "ngMember"
-	        Member member = memberRepository.findById(memberId).orElse(null);
-				System.out.println("MEMBER "+member.getNgMember());
-	        if (member != null && member.getNgMember() ==1) {
-	            return true;
-	        } else {
-	            return false;
-	        }
-	    }
-	 
-	 public boolean remarksAutoApproval() {		   
-		    Optional<Config> configOptional = configRepository.findByKey("AUTO_APPROVAL");
-
-		    if (configOptional.isPresent()) {
-		        Config config = configOptional.get();		        
-		        return Boolean.parseBoolean(config.getValue());
-		    } else {
-		        return false; 
-		    }
+	public boolean remarksAutoApproval() {
+		Optional<Config> configOptional = configRepository.findByKey("AUTO_APPROVAL");
+		if (configOptional.isPresent()) {
+			Config config = configOptional.get();
+			return "1".equals(config.getValue()) || Boolean.parseBoolean(config.getValue());
+		} else {
+			return false;
 		}
+	}
 
-	 public List<TreeDTO> treeView(MemberRemarkDTO request) {
-		    String type = request.getType();
-		    List<Object[]> result = remarkRepository.findRemarkHierarchyTreeByType(type);
+	public List<TreeDTO> treeView(MemberRemarkDTO request) {
+		String type = request.getType();
+		List<Object[]> result = remarkRepository.findRemarkHierarchyTreeByType(type);
 
-		    List<TreeDTO> treeDTOList = result.stream()
-		        .map(row -> new TreeDTO(
-		            (int) row[0],      // id
-		            (String) row[1],   // remarkNo
-		            (int) row[2],      // ParentId
-		            (String) row[3],   // title
-		            (String) row[4],   // text
-		            (int) row[5],      // remarks
-		            row[6] != null ? ((Timestamp) row[6]).toLocalDateTime().toLocalDate() : null // date
-		        ))
-		        .collect(Collectors.toList());
+		List<TreeDTO> treeDTOList = result.stream()
+				.map(row -> new TreeDTO(
+						(int) row[0], // id
+						(String) row[1], // remarkNo
+						(int) row[2], // ParentId
+						(String) row[3], // title
+						(String) row[4], // text
+						(int) row[5], // remarks
+						row[6] != null ? ((Timestamp) row[6]).toLocalDateTime().toLocalDate() : null // date
+				))
+				.collect(Collectors.toList());
 
-		    return treeDTOList;
+		return treeDTOList;
+	}
+
+	public List<TreeListDTO> treeList(MemberRemarkDTO request, int page, int size) {
+		Logger logger = LoggerFactory.getLogger(this.getClass());
+		String type = request.getType();
+		Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+		Page<Object[]> resultPage = remarkRepository.findRemarkHierarchyTreeListByType(type, pageable);
+
+		if (resultPage.hasContent()) {
+			return resultPage.getContent().stream()
+					.map(row -> {
+						int parentId = (int) row[0];
+						String memberIcon = row[10] != null ? row[10].toString() : null; // null-safe
+						int childCount = remarkRepository.findChildCount(type, parentId);
+
+						return new TreeListDTO(
+								(int) row[0], // id
+								(String) row[1], // remarkNo
+								(int) row[2], // parentId
+								(String) row[3], // title
+								(String) row[4], // text
+								(int) row[5], // remarks
+								row[6] != null ? ((Timestamp) row[6]).toLocalDateTime() : null, // date
+								(int) row[7], // memberId
+								(String) row[8], // memberName
+								childCount, // count
+								memberIcon // member icon (nullable)
+						);
+					})
+					.collect(Collectors.toList());
+		} else {
+			logger.debug("No results found for type: {}", type);
+			return Collections.emptyList();
 		}
-	 
-	 
-	 public List<TreeListDTO> treeList(MemberRemarkDTO request, int page, int size) {
-		    Logger logger = LoggerFactory.getLogger(this.getClass());
-		    String type = request.getType();
-		    Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id")); 			  
-		    Page<Object[]> resultPage = remarkRepository.findRemarkHierarchyTreeListByType(type, pageable);
-
-		    if (resultPage.hasContent()) {
-		        return resultPage.getContent().stream()
-		            .map(row -> {
-		                int parentId = (int) row[0];
-		                String memberIcon = row[10] != null ? row[10].toString() : null; // null-safe
-		                int childCount = remarkRepository.findChildCount(type, parentId);
-
-		                return new TreeListDTO(
-		                    (int) row[0],       // id
-		                    (String) row[1],    // remarkNo
-		                    (int) row[2],       // parentId
-		                    (String) row[3],    // title
-		                    (String) row[4],    // text
-		                    (int) row[5],       // remarks
-		                    row[6] != null ? ((Timestamp) row[6]).toLocalDateTime() : null,  // date
-		                    (int) row[7],       // memberId
-		                    (String) row[8],    // memberName
-		                    childCount,         // count
-		                    memberIcon          // member icon (nullable)
-		                );
-		            })
-		            .collect(Collectors.toList());
-		    } else {
-		        logger.debug("No results found for type: {}", type);
-		        return Collections.emptyList();
-		    }
-		}
-
-	 
-	 
+	}
 
 	public Remarks addRemarks(RemarkDTO request) {
-		 Remarks remarks = new Remarks();
-		 Integer type=request.getType();
-		 switch (type) {
-         case 1:
-             remarks.setNormal((byte) 1);
-             break;
-         case 2:
-             remarks.setAnxiety((byte) 1);
-             break;
-         case 3:
-             remarks.setBlackmail((byte) 1);
-             break;
-         case 4:
-             remarks.setOther((byte) 1);
-             break;
-         case 5:
-             remarks.setGrowingup((byte) 1);
-             break;
-		 case 6:
-			 remarks.setDiary((byte) 1);
-			 break;
-         default:
-             // Handle invalid type
-             break;
-     }
-     remarks.setTitle(request.getTitle());
-     remarks.setText(request.getText());
-     remarks.setMember(request.getMemberId());
-     remarks.setStatus(0);
-     remarks.setDate(LocalDateTime.now());
-     remarks.setRemarkNo("RMK");
-     remarks.setRemarks(0);
-     remarkRepository.save(remarks);
-     remarks.setRemarkNo(generateRMKNo(remarks.getId()));
-     return  remarkRepository.save(remarks);
- 
-		
-	}	
+		// --- Block NG members: not allowed to post remarks ---
+		if (isBlockedMember(request.getMemberId())) {
+			throw new IllegalArgumentException("ブロックされたメンバーは返信を投稿できません。");
+		}
+
+		// --- NG Word check: block before saving ---
+		if (request.getText() != null && !isNGWordsChecking(request.getText())) {
+			throw new IllegalArgumentException("このコメントには禁止ワード（不適切な表現）が含まれているため、送信できません。");
+		}
+		if (request.getTitle() != null && !isNGWordsChecking(request.getTitle())) {
+			throw new IllegalArgumentException("このコメントタイトルには禁止ワード（不適切な表現）が含まれているため、送信できません。");
+		}
+
+		Remarks remarks = new Remarks();
+		Integer type = request.getType();
+		switch (type) {
+			case 1:
+				remarks.setNormal((byte) 1);
+				break;
+			case 2:
+				remarks.setAnxiety((byte) 1);
+				break;
+			case 3:
+				remarks.setBlackmail((byte) 1);
+				break;
+			case 4:
+				remarks.setOther((byte) 1);
+				break;
+			case 5:
+				remarks.setGrowingup((byte) 1);
+				break;
+			case 6:
+				remarks.setDiary((byte) 1);
+				break;
+			default:
+				// Handle invalid type
+				break;
+		}
+		remarks.setTitle(request.getTitle());
+		remarks.setText(request.getText());
+		remarks.setMember(request.getMemberId());
+		remarks.setStatus(0);
+		remarks.setDate(LocalDateTime.now());
+		remarks.setRemarkNo("RMK");
+		remarks.setRemarks(0);
+		remarkRepository.save(remarks);
+		remarks.setRemarkNo(generateRMKNo(remarks.getId()));
+		return remarkRepository.save(remarks);
+
+	}
 
 	public Long getCountOfFilteredMembers(MemberRemarkDTO request) {
-		Long result = remarkRepository.countRemarkHierarchyTreeByType(request.getType());		
+		Long result = remarkRepository.countRemarkHierarchyTreeByType(request.getType());
 		return result;
 	}
-	
-	public List<RemarkResponseDTO> getAllChildRemarks(Integer parentId) {
-        List<RemarkResponseDTO> childRemarks = new ArrayList<>();
-        fetchChildRemarks(parentId, childRemarks);
-        return childRemarks;
-    }
 
-    private void fetchChildRemarks(Integer parentId, List<RemarkResponseDTO> childRemarks) {
-        List<Object[]> directChildRemarks = remarkRepository.findByRemarksAndStatus(parentId, "1");
-        for (Object[] row : directChildRemarks) {
-            RemarkResponseDTO remark = new RemarkResponseDTO(
-                (Integer) row[0], // id
-                (String) row[1],  // remarkNo
-                (String) row[2],  // title
-                (String) row[3],  // text
-                (LocalDateTime) row[4], // date
-                (Integer) row[5], // status
-                (Integer) row[6], //member
-                (Integer) row[7], //remarks
-                (String) row[8],  // memberName
-                (Integer) row[9],  // memberSex
-			 	(String) row[10]
-            );
-            childRemarks.add(remark);
-            fetchChildRemarks(remark.getId(), childRemarks);
-        }
-    }
-	 
+	public List<RemarkResponseDTO> getAllChildRemarks(Integer parentId) {
+		List<RemarkResponseDTO> childRemarks = new ArrayList<>();
+		fetchChildRemarks(parentId, childRemarks);
+		return childRemarks;
+	}
+
+	private void fetchChildRemarks(Integer parentId, List<RemarkResponseDTO> childRemarks) {
+		List<Object[]> directChildRemarks = remarkRepository.findByRemarksAndStatus(parentId, "1");
+		for (Object[] row : directChildRemarks) {
+			RemarkResponseDTO remark = new RemarkResponseDTO(
+					(Integer) row[0], // id
+					(String) row[1], // remarkNo
+					(String) row[2], // title
+					(String) row[3], // text
+					(LocalDateTime) row[4], // date
+					(Integer) row[5], // status
+					(Integer) row[6], // member
+					(Integer) row[7], // remarks
+					(String) row[8], // memberName
+					(Integer) row[9], // memberSex
+					(String) row[10]);
+			childRemarks.add(remark);
+			fetchChildRemarks(remark.getId(), childRemarks);
+		}
+	}
 
 }

@@ -48,9 +48,6 @@ public class Remarks {
 	@Column(columnDefinition = "tinyint")
     private byte growingup;
 
-	@Column(columnDefinition = "tinyint")
-	private byte diary;
-	
 	@Column(columnDefinition = "VARCHAR(255)")
 	 private String addition1;
 	
@@ -74,10 +71,6 @@ public class Remarks {
 
 	@Column(columnDefinition = "tinyint default 0")
 	private byte diary = 0;
-	
-	
-	
-	
 	
 	public Integer getId() {
 		return id;
