@@ -66,7 +66,7 @@ public class TreeService {
 
 		// --- Block NG members: not allowed to reply at all ---
 		if (isBlockedMember(request.getMemberId())) {
-			throw new IllegalArgumentException("ブロックされたメンバーは返信を投稿できません。");
+			throw new IllegalArgumentException("発言はできないようになっています。");
 		}
 
 		// --- NG Word check: block before saving for all remaining members ---
@@ -325,7 +325,7 @@ public class TreeService {
 	public Remarks addRemarks(RemarkDTO request) {
 		// --- Block NG members: not allowed to post remarks ---
 		if (isBlockedMember(request.getMemberId())) {
-			throw new IllegalArgumentException("ブロックされたメンバーは返信を投稿できません。");
+			throw new IllegalArgumentException("発言はできないようになっています。");
 		}
 
 		// --- NG Word check: block before saving ---
